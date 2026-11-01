@@ -25,7 +25,17 @@ Nothing published to npm yet. Everything below is pre-release work on `RapidQ`.
   SvelteKit SSR. Compiler-free, so one build serves Svelte 4 and 5.
 - **`@usemote/web-component`** — `<floating-field>` for plain HTML, Astro,
   Webflow and Framer. The CDN build bundles core and both packs.
-- **`@usemote/pack-esports`** — 16 objects, 4 themes.
+- **Nine shape packs, 137 shapes.** `pack-esports` (16), plus eight industry
+  packs from Oti's designer: `pack-space`, `pack-cyber`, `pack-health`,
+  `pack-education`, `pack-devtools`, `pack-ai`, `pack-fintech`,
+  `pack-creative` (15–16 each). Every pack ships four themes, swatches,
+  per-theme background and ink, a display typeface, demo configurations, and
+  a curated `baseShapes` set.
+- **Pack metadata in core.** `ShapeColors` carries the theme palette as `p`
+  (read it via `altColor()`), and `ShapePack` carries `description`,
+  `swatches`, `baseShapes`, `background`, `ink`, `font` and `demo`. A pack
+  declaring `baseShapes` has those primitives folded into the pool
+  automatically. All additive; no existing seed moves.
 - **`@usemote/mcp`** — MCP server (7 tools) and an agent `SKILL.md`.
 - shadcn GitHub registry: `pnpm dlx shadcn@latest add oti-adjei/mote/floating-field`.
 - CI enforces the determinism contract: a change to the frame-0 snapshots
@@ -55,3 +65,13 @@ affected.
 - **`pack-esports` keycap used a hardcoded `#000` shadow,** which went muddy on
   light and lime grounds; it now derives from `c.d`. `cursor` declared
   `ar: 0.8` against a 90×100 viewBox; corrected to `0.9`.
+- **`space/crescent` minted an SVG mask id from a global counter.** Ids are
+  forbidden because a shape is inlined many times and would collide, and a
+  counter makes the server and client render differently — a hydration
+  mismatch and an unstable snapshot. Reimplemented as two circles under
+  `fill-rule="evenodd"`.
+- **`devtools/cmdkey` repeated the esports keycap's hardcoded `#000` shadow.**
+  Now derived from `c.d`.
+- **`health/heart2` declared `ar: 1` against a 100×92 viewBox.** `ar` drives
+  layout spacing and collision, so a wrong value makes a shape crowd its
+  neighbours.
