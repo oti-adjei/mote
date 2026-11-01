@@ -1,0 +1,39 @@
+name: deprecate
+
+# Manual trigger so a bad release can be flagged without a local npm login.
+# Record the deprecation in CHANGELOG.md under "Deprecated".
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package name, or "all"
+        required: true
+        default: all
+      version:
+        description: Version to deprecate, e.g. 0.1.0
+        required: true
+      message:
+        description: Message shown on install. Empty un-deprecates.
+        required: false
+        default: ''
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v2
+        with: { install: true, cache: true }
+
+      - env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          targets="${{ inputs.package }}"
+          if [ "$targets" = "all" ]; then
+            targets="@usemote/core @usemote/react @usemote/pack-esports @usemote/web-component @usemote/mcp"
+          fi
+          for pkg in $targets; do
+            echo "deprecating $pkg@${{ inputs.version }}"
+            npm deprecate "$pkg@${{ inputs.version }}" "${{ inputs.message }}"
+          done

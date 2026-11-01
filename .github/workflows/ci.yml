@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push:
+    branches: [main, Develop, RapidQ]
+  pull_request:
+    branches: [main, Develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: jdx/mise-action@v2
+        with:
+          install: true
+          cache: true
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+
+      # Build precedes test: cross-package tests import @usemote/core through
+      # its published entry points, so a stale dist/ tests the wrong code.
+      - run: pnpm build
+
+      - run: pnpm test
+
+      - run: pnpm size
+
+      # The frame-0 snapshots are the determinism contract. If a change alters
+      # them, the working tree is dirty here — and that is a major version
+      # bump, not a snapshot to refresh.
+      - name: Assert determinism snapshots unchanged
+        run: |
+          if ! git diff --quiet -- '**/__snapshots__'; then
+            echo "::error::Frame-0 snapshots changed. This is a BREAKING change:"
+            echo "::error::every existing seed now produces a different layout."
+            echo "::error::Bump major and update CHANGELOG.md deliberately."
+            git diff -- '**/__snapshots__'
+            exit 1
+          fi
