@@ -11,7 +11,15 @@
   },
   "dependencies": {
     "@usemote/core": "workspace:*",
+    "@usemote/pack-ai": "workspace:*",
+    "@usemote/pack-creative": "workspace:*",
+    "@usemote/pack-cyber": "workspace:*",
+    "@usemote/pack-devtools": "workspace:*",
+    "@usemote/pack-education": "workspace:*",
     "@usemote/pack-esports": "workspace:*",
+    "@usemote/pack-fintech": "workspace:*",
+    "@usemote/pack-health": "workspace:*",
+    "@usemote/pack-space": "workspace:*",
     "@usemote/react": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

@@ -1,0 +1,44 @@
+{
+  "name": "@usemote/pack-fintech",
+  "version": "0.1.0",
+  "description": "FinTech shape pack for Mote — 15 shapes and four themes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "size": "size-limit"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "10 kB"
+    }
+  ],
+  "peerDependencies": {
+    "@usemote/core": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "@usemote/core": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

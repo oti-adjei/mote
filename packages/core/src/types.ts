@@ -13,6 +13,12 @@ export interface ShapeColors {
   f: string;
   /** Accents, strokes and text drawn over the fill. */
   d: string;
+  /**
+   * Every fill in the active theme, so a shape can reach for a third colour
+   * without hardcoding one. Use `altColor(c)` rather than indexing this.
+   * Absent when a caller builds colours by hand.
+   */
+  p?: readonly string[];
 }
 
 export interface ShapeDef {
@@ -47,6 +53,26 @@ export interface ShapePack {
    */
   shapes: ShapeDef[];
   themes?: Record<string, ThemeStop[]>;
+
+  /** One line on what the pack is for. Shown in the playground and docs. */
+  description?: string;
+  /** Representative colours, darkest first. Presentation only. */
+  swatches?: readonly string[];
+  /**
+   * Ids of base geometric primitives that pair well with this pack. When
+   * present, core folds those base shapes into the pool automatically, so
+   * `packs={[fintech]}` gives objects *and* a curated set of primitives
+   * rather than objects alone. A pack that omits it behaves as before.
+   */
+  baseShapes?: readonly string[];
+  /** Suggested stage background per theme name. Presentation only. */
+  background?: Record<string, string>;
+  /** Suggested foreground/text colour per theme name. Presentation only. */
+  ink?: Record<string, string>;
+  /** The pack's display typeface, for text-bearing shapes and demos. */
+  font?: { stack: string; name: string; weight: number };
+  /** Two configurations that show the pack at its best. */
+  demo?: Record<string, Partial<FieldOptions>>;
 }
 
 export interface Rect {

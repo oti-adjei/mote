@@ -97,4 +97,14 @@ export const BASE_PACK: ShapePack = {
   },
 };
 
+/** Wraps a body in the standard shape <svg>. Exported for pack authors. */
 export const svgWrap = svg;
+
+/** Stroke-only attribute block with round caps — the common pack idiom. */
+export const stroke = (color: string, width: number): string =>
+  `fill="none" stroke="${color}" stroke-width="${width}" ` +
+  `stroke-linecap="round" stroke-linejoin="round"`;
+
+/** The four-point sparkle path, reused across packs. */
+export const SPARK_PATH =
+  'M50 0C54 36 64 46 100 50C64 54 54 64 50 100C46 64 36 54 0 50C36 46 46 36 50 0z';

@@ -21,8 +21,11 @@ describe('pack integrity', () => {
     ]);
   });
 
-  it('declares the four brand themes', () => {
-    expect(Object.keys(ESPORTS_THEMES).sort()).toEqual(['dark', 'light', 'lime', 'mono']);
+  it('declares the brand themes, with accent aliasing lime', () => {
+    expect(Object.keys(ESPORTS_THEMES).sort()).toEqual(['accent', 'dark', 'light', 'lime', 'mono']);
+    // `accent` is the name every other pack uses; `lime` is kept because it
+    // is this pack's own vocabulary and removing it would change layouts.
+    expect(ESPORTS_THEMES.accent).toEqual(ESPORTS_THEMES.lime);
   });
 
   it('uses only brand colours', () => {
@@ -68,7 +71,8 @@ describe('shape rendering', () => {
 
   it('declares aspect ratios matching its viewBoxes', () => {
     for (const s of ESPORTS_SHAPES) {
-      const vb = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(s.render({ f: '#1', d: '#2' }));
+      // A viewBox need not start at the origin — space/galaxy is "22 18 64 60".
+      const vb = /viewBox="[-\d.]+ [-\d.]+ ([\d.]+) ([\d.]+)"/.exec(s.render({ f: '#1', d: '#2' }));
       expect(vb, s.id).not.toBeNull();
       const ratio = Number(vb![1]) / Number(vb![2]);
       expect(s.ar, s.id).toBeCloseTo(ratio, 2);
