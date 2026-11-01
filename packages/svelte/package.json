@@ -1,0 +1,32 @@
+{
+  "name": "@usemote/svelte",
+  "version": "0.1.0",
+  "description": "Svelte action for Mote — deterministic floating-shape background fields.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "size": "size-limit"
+  },
+  "size-limit": [{ "path": "dist/index.js", "limit": "2 kB" }],
+  "peerDependencies": {
+    "@usemote/core": "workspace:^0.1.0",
+    "svelte": ">=4"
+  },
+  "peerDependenciesMeta": { "svelte": { "optional": true } },
+  "devDependencies": {
+    "@usemote/core": "workspace:*",
+    "happy-dom": "^20.0.0"
+  },
+  "publishConfig": { "access": "public" }
+}
