@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.*
+!.env.example
+.vercel/
+.astro/
+.next/
+playwright-report/
+test-results/
+
+# Local-only planning / specs (kept outside this repo, listed defensively)
+01-Planning/
+specs/
+plans/
+planning/
