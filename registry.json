@@ -1,0 +1,44 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "mote",
+  "homepage": "https://mote.hearvie.dev",
+  "items": [
+    {
+      "name": "floating-field",
+      "type": "registry:component",
+      "title": "Floating Field",
+      "description": "Deterministic animated background field of designed SVG shapes. Seven motion behaviours, SSR-safe, reduced-motion aware.",
+      "dependencies": ["@usemote/core"],
+      "files": [
+        {
+          "path": "registry/floating-field/floating-field.tsx",
+          "type": "registry:component",
+          "target": "components/ui/floating-field.tsx"
+        }
+      ]
+    },
+    {
+      "name": "floating-field-esports",
+      "type": "registry:component",
+      "title": "Floating Field + Esports pack",
+      "description": "The component together with the esports shape pack — 16 objects and four themes.",
+      "dependencies": ["@usemote/core", "@usemote/pack-esports"],
+      "registryDependencies": ["floating-field"],
+      "files": []
+    },
+    {
+      "name": "mote-pack-starter",
+      "type": "registry:file",
+      "title": "Shape pack starter",
+      "description": "A commented one-file template for authoring your own Mote shape pack, with the six authoring rules inline.",
+      "dependencies": ["@usemote/core"],
+      "files": [
+        {
+          "path": "registry/pack-starter/mote-pack.ts",
+          "type": "registry:file",
+          "target": "lib/mote-pack.ts"
+        }
+      ]
+    }
+  ]
+}
