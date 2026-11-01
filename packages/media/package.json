@@ -1,0 +1,25 @@
+{
+  "name": "@usemote/media",
+  "version": "0.1.0",
+  "description": "Window frames and media particles for Mote — photos, GIFs and video that float with the shapes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "size": "size-limit"
+  },
+  "size-limit": [{ "path": "dist/index.js", "limit": "12 kB" }],
+  "peerDependencies": { "@usemote/core": "workspace:^0.1.0" },
+  "devDependencies": { "@usemote/core": "workspace:*", "happy-dom": "^20.0.0" },
+  "publishConfig": { "access": "public" }
+}

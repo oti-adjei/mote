@@ -190,6 +190,9 @@ importers:
       '@usemote/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@usemote/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@usemote/pack-ai':
         specifier: workspace:*
         version: link:../../packages/pack-ai
@@ -260,6 +263,15 @@ importers:
       zod:
         specifier: ^3.25.0
         version: 3.25.76
+
+  packages/media:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
 
   packages/pack-ai:
     devDependencies:

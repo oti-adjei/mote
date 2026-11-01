@@ -81,6 +81,8 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
     elapsed = 0;
     ctx.t = 0;
     renderer.mount(particles);
+    // mount() replaces the nodes, so any media is fresh and paused.
+    renderer.setMediaPlayback(!reduced && visible && !opts.paused);
   }
 
   function tick(dt: number): void {
@@ -160,6 +162,9 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
       io = new IntersectionObserver(
         (entries) => {
           visible = entries.some((e) => e.isIntersecting);
+          // Media keeps decoding whether or not the field ticks, so playback
+          // has to follow visibility explicitly. Reduced motion never plays.
+          renderer.setMediaPlayback(visible && !reduced);
         },
         { rootMargin: '100px' },
       );
@@ -170,10 +175,13 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
   build();
   if (reduced) {
     devWarn('mote: prefers-reduced-motion is set — rendering a static field.');
+    // Media stays on its poster frame: paused, never started.
+    renderer.setMediaPlayback(false);
   } else {
     bindPointer();
     observe();
     startLoop();
+    renderer.setMediaPlayback(true);
   }
 
   return {
@@ -215,10 +223,12 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
     pause() {
       opts.paused = true;
       stopLoop();
+      renderer.setMediaPlayback(false);
     },
     resume() {
       opts.paused = false;
       startLoop();
+      if (!reduced) renderer.setMediaPlayback(true);
     },
     destroy() {
       destroyed = true;
