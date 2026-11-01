@@ -108,9 +108,26 @@ function num(v: string | null, fallback: number, lo: number, hi: number): number
   return Math.min(hi, Math.max(lo, n));
 }
 
+/**
+ * Keys that mark a hash as a playground config rather than something else.
+ *
+ * The hash is shared with ordinary anchor links — `#roadmap` is a real
+ * destination on this page. Parsed as a query string that yields the single
+ * key "roadmap" with an empty value, and every numeric field then coerced
+ * from `''` to 0 and clamped, which silently rewrote the field to
+ * `count=1 size=8 seed=0 speed=0`. A config has to be recognised, not merely
+ * non-empty.
+ */
+const CONFIG_KEYS = ['pack', 'mode', 'set', 'shapes', 'count', 'size', 'seed', 'theme'];
+
+export function isConfigHash(hash: string): boolean {
+  const p = new URLSearchParams(hash.replace(/^#/, ''));
+  return CONFIG_KEYS.some((k) => p.has(k));
+}
+
 export function decode(hash: string): Config {
   const p = new URLSearchParams(hash.replace(/^#/, ''));
-  if ([...p.keys()].length === 0) return { ...DEFAULT_CONFIG };
+  if (!isConfigHash(hash)) return { ...DEFAULT_CONFIG };
   const d = DEFAULT_CONFIG;
   return {
     packId: oneOf(p.get('pack'), Object.keys(PACKS) as PackId[], d.packId),
