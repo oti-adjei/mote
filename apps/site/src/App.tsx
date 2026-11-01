@@ -4,6 +4,7 @@ import { esports } from '@usemote/pack-esports';
 import { Studio } from './Studio.js';
 import { Packs } from './Packs.js';
 import { Frames } from './Frames.js';
+import { Roadmap } from './Roadmap.js';
 import { Gallery } from './Gallery.js';
 import { Library } from './Library.js';
 
@@ -17,6 +18,16 @@ export function App(): React.ReactElement {
           shapes="controller,trophy,keycap,gg,score,live,medal"
           count={7} size={92} seed={17} avoid="center"
         />
+        <nav style={{
+          position: 'relative', display: 'flex', justifyContent: 'center', gap: 20,
+          marginBottom: 36, font: '500 12px var(--mono)', letterSpacing: '.14em',
+        }}>
+          {[['#roadmap', 'ROADMAP'], ['https://github.com/oti-adjei/mote', 'GITHUB']].map(([href, label]) => (
+            <a key={label} href={href} style={{ color: '#8a8a85', textDecoration: 'none' }}>
+              {label}
+            </a>
+          ))}
+        </nav>
         <div style={{ position: 'relative', textAlign: 'center', pointerEvents: 'none' }}>
           <div className="eyebrow" style={{ color: '#8a8a85' }}>Mote · a background for every section</div>
           <h1 style={{ margin: '18px 0' }}>Floating shapes</h1>
@@ -33,6 +44,7 @@ export function App(): React.ReactElement {
       <Frames />
       <Gallery />
       <Library />
+      <Roadmap />
 
       <footer>
         <p>
