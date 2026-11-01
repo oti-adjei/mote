@@ -1,9 +1,9 @@
 /** The playground: live prop editing, seed shuffle, permalink, copy-out. */
 import { FloatingField } from '@usemote/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AVOIDS, DIRECTIONS, MODES, PACKS, SETS, THEMES,
-  type Config, type PackId, decode, encode, stageColors, toFieldProps,
+  type Config, type PackId, decode, encode, isConfigHash, stageColors, toFieldProps,
 } from './config.js';
 import { generate, type Target } from './codegen.js';
 
@@ -20,12 +20,20 @@ export function Studio(): React.ReactElement {
 
   // The hash is the share mechanism, so keep it current — replaceState, not
   // pushState, or every slider nudge becomes a back-button step.
+  //
+  // It is only claimed once the user actually changes something. Writing it on
+  // mount would overwrite an anchor the visitor followed to get here, so
+  // `/#roadmap` would bounce straight back to `/#pack=…` and lose their place.
+  const touched = useRef(isConfigHash(window.location.hash));
   useEffect(() => {
+    if (!touched.current) return;
     window.history.replaceState(null, '', `#${encode(config)}`);
   }, [config]);
 
-  const set = <K extends keyof Config>(key: K, value: Config[K]): void =>
+  const set = <K extends keyof Config>(key: K, value: Config[K]): void => {
+    touched.current = true;
     setConfig((c) => ({ ...c, [key]: value }));
+  };
 
   const pack = PACKS[config.packId];
   const stage = stageColors(config.packId, config.theme);
@@ -42,11 +50,13 @@ export function Studio(): React.ReactElement {
     }
   };
 
-  const toggleShape = (id: string): void =>
+  const toggleShape = (id: string): void => {
+    touched.current = true;
     setConfig((c) => ({
       ...c,
       shapes: c.shapes.includes(id) ? c.shapes.filter((s) => s !== id) : [...c.shapes, id],
     }));
+  };
 
   return (
     <>
@@ -62,7 +72,10 @@ export function Studio(): React.ReactElement {
             <select
               id="pack"
               value={config.packId}
-              onChange={(e) => setConfig((c) => ({ ...c, packId: e.target.value as PackId, shapes: [] }))}
+              onChange={(e) => {
+                touched.current = true;
+                setConfig((c) => ({ ...c, packId: e.target.value as PackId, shapes: [] }));
+              }}
             >
               {Object.entries(PACKS).map(([id, p]) => (
                 <option key={id} value={id}>{p.name} · {p.shapes.length} shapes</option>
