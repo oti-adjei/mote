@@ -26,11 +26,42 @@ visual-regression tests are possible.
 
 ## Packages
 
-| Package | What |
-|---|---|
-| `@usemote/core` | Zero-dependency engine. Shapes, themes, layout, 7 motion presets, DOM + string renderers. |
-| `@usemote/react` | `<FloatingField />`, SSR-safe. |
-| `@usemote/pack-esports` | 16 esports objects and 4 themes. |
+| Package | What | Size |
+|---|---|---|
+| [`@usemote/core`](./packages/core) | Zero-dependency engine. Shapes, themes, layout, 7 motion presets, DOM + string renderers. | 7.7 kB |
+| [`@usemote/react`](./packages/react) | `<FloatingField />`, SSR-safe. | 627 B |
+| [`@usemote/pack-esports`](./packages/pack-esports) | 16 esports objects and 4 themes. | 1.8 kB |
+| [`@usemote/web-component`](./packages/web-component) | `<floating-field>` for plain HTML, Astro, Webflow, Framer. | 10.6 kB |
+| [`@usemote/mcp`](./packages/mcp) | MCP server + agent skill. | — |
+
+Sizes are brotlied and enforced in CI.
+
+## Install
+
+```bash
+# React
+pnpm add @usemote/core @usemote/react
+
+# No build step at all
+<script src="https://cdn.jsdelivr.net/npm/@usemote/web-component"></script>
+
+# Vendored source you own, via the shadcn registry
+pnpm dlx shadcn@latest add oti-adjei/mote/floating-field
+```
+
+## Quick start
+
+```tsx
+import { FloatingField } from '@usemote/react';
+
+<section style={{ position: 'relative', overflow: 'hidden' }}>
+  <FloatingField mode="bob" set="geo" count={12} avoid="center" depth />
+  <h1 style={{ position: 'relative' }}>Your headline</h1>
+</section>
+```
+
+The field is a layer: it fills its nearest positioned ancestor, so that parent
+needs `position: relative` and content above it needs `position: relative` too.
 
 ## Design principles
 
@@ -47,9 +78,15 @@ Requires [mise](https://mise.jdx.dev) (pins Node 26 and pnpm 12) and pnpm.
 ```bash
 mise install
 pnpm install
-pnpm check      # typecheck + test + build
+pnpm check      # typecheck → build → test, in that order
 pnpm dev        # playground
 ```
+
+Build precedes test deliberately: cross-package tests import `@usemote/core`
+through its published entry points, so a stale `dist/` tests the wrong code.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) — especially the determinism contract,
+which governs how versions are bumped.
 
 ## Inspiration
 
