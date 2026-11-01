@@ -1,0 +1,38 @@
+{
+  "name": "@usemote/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Mote \u2014 lets coding agents discover shapes, packs and presets, and generate correct snippets.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "mote-mcp": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.21.0",
+    "@usemote/core": "workspace:^0.1.0",
+    "@usemote/pack-esports": "workspace:^0.1.0",
+    "zod": "^3.25.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
