@@ -1,0 +1,52 @@
+{
+  "name": "@usemote/core",
+  "version": "0.1.0",
+  "description": "Deterministic floating-shape background fields. Zero dependencies, SSR-safe, reduced-motion aware.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "size": "size-limit"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "12 kB"
+    }
+  ],
+  "keywords": [
+    "background",
+    "animation",
+    "svg",
+    "deterministic",
+    "shapes",
+    "floating",
+    "hero"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "happy-dom": "^20.0.0"
+  }
+}
