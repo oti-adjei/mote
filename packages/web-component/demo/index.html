@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mote — plain HTML, no build step</title>
+    <style>
+      body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #dcdbd5; }
+      section { position: relative; height: 70vh; overflow: hidden; display: grid; place-items: center; }
+      .dark { background: #121212; color: #f2f2ee; }
+      .lime { background: #d4ff1e; color: #121212; }
+      h1 { font-size: clamp(32px, 7vw, 86px); letter-spacing: -0.05em; margin: 0; position: relative; }
+      p.note { position: relative; margin: 8px 0 0; opacity: .7; }
+    </style>
+  </head>
+  <body>
+    <section class="dark">
+      <floating-field pack="esports" mode="bob" set="objects" count="10"
+                      size="86" seed="4" theme="dark" avoid="center" depth></floating-field>
+      <div style="text-align:center">
+        <h1>No build step</h1>
+        <p class="note">One script tag, one element.</p>
+      </div>
+    </section>
+
+    <section class="lime">
+      <floating-field pack="esports" mode="across" direction="right" set="objects"
+                      count="14" size="80" seed="9" theme="lime" depth></floating-field>
+      <h1>Across</h1>
+    </section>
+
+    <!--
+      Built output, so run `pnpm build` in this package first.
+      Published, this is one line from a CDN:
+      <script src="https://cdn.jsdelivr.net/npm/@usemote/web-component"></script>
+    -->
+    <script src="../dist/mote.global.js"></script>
+  </body>
+</html>

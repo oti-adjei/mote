@@ -252,6 +252,19 @@ importers:
         specifier: ^19.2.0
         version: 19.3.1(react@19.3.1)
 
+  packages/web-component:
+    dependencies:
+      '@usemote/core':
+        specifier: workspace:^0.1.0
+        version: link:../core
+    devDependencies:
+      '@usemote/pack-esports':
+        specifier: workspace:*
+        version: link:../pack-esports
+      happy-dom:
+        specifier: ^20.0.0
+        version: 20.14.6
+
 packages:
 
   '@babel/code-frame@7.29.7':
