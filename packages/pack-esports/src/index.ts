@@ -191,6 +191,13 @@ export const ESPORTS_THEMES: Record<string, ThemeStop[]> = {
     { f: '#121212', d: '#d4ff1e', w: 3 },
     { f: '#f2f2ee', d: '#121212', w: 2 },
   ],
+  // Alias of `lime`, so every pack answers to the same four theme names.
+  // Added rather than renamed: `lime` is this pack's own vocabulary and
+  // removing it would change layouts for anyone already using it.
+  accent: [
+    { f: '#121212', d: '#d4ff1e', w: 3 },
+    { f: '#f2f2ee', d: '#121212', w: 2 },
+  ],
   mono: [
     { f: '#f2f2ee', d: '#121212', w: 2 },
     { f: '#4a4a45', d: '#f2f2ee', w: 2 },
@@ -201,8 +208,18 @@ export const esports: ShapePack = {
   id: 'esports',
   name: 'Esports',
   version: '0.1.0',
+  description:
+    'Controllers, trophies, keycaps and score tags. Lime on near-black, the Publication palette.',
   shapes: ESPORTS_SHAPES,
   themes: ESPORTS_THEMES,
+  swatches: ['#121212', '#d4ff1e', '#f2f2ee', '#4a4a45'],
+  background: { dark: '#121212', light: '#efeee8', accent: '#d4ff1e', lime: '#d4ff1e', mono: '#121212' },
+  ink: { dark: '#f2f2ee', light: '#121212', accent: '#121212', lime: '#121212', mono: '#f2f2ee' },
+  font: { stack: "'Schibsted Grotesk',system-ui,sans-serif", name: 'Schibsted Grotesk', weight: 900 },
+  demo: {
+    a: { mode: 'bob', count: 10, size: 86, seed: 4, avoid: 'center' },
+    b: { mode: 'drift', count: 30, size: 46, seed: 31, depth: true },
+  },
 };
 
 export default esports;

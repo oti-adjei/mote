@@ -5,16 +5,48 @@
  * dropped with a dev warning; if nothing matches we fall back to `set` rather
  * than render an empty field.
  */
+import { BASE_PACK } from './shapes.js';
 import type { FieldOptions, ShapeDef, ShapePack, SetId } from './types.js';
 
 export function resolvePacks(packs: FieldOptions['packs'], base: ShapePack): ShapePack[] {
   return packs && packs.length > 0 ? packs : [base];
 }
 
-/** Flattened shape list across packs, in pack order. */
+/**
+ * Flattened shape list across packs, in pack order.
+ *
+ * A pack may declare `baseShapes` — the base geometric primitives it was
+ * designed to sit alongside. Those are folded in automatically, so
+ * `packs={[fintech]}` yields objects *and* a curated set of primitives rather
+ * than objects alone. Packs that omit it are unaffected, which keeps every
+ * existing seed stable.
+ *
+ * Base shapes are prepended, and de-duplicated across packs, so pack order
+ * decides the final list and a shape can never appear twice.
+ */
 export function allShapes(packs: readonly ShapePack[]): ShapeDef[] {
+  const wanted = new Set<string>();
+  for (const p of packs) for (const id of p.baseShapes ?? []) wanted.add(id);
+
   const out: ShapeDef[] = [];
-  for (const p of packs) out.push(...p.shapes);
+  const seen = new Set<string>();
+
+  if (wanted.size > 0) {
+    for (const s of BASE_PACK.shapes) {
+      if (wanted.has(s.id) && !seen.has(s.id)) {
+        seen.add(s.id);
+        out.push(s);
+      }
+    }
+  }
+
+  for (const p of packs) {
+    for (const s of p.shapes) {
+      if (seen.has(s.id)) continue;
+      seen.add(s.id);
+      out.push(s);
+    }
+  }
   return out;
 }
 

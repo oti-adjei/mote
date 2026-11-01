@@ -2,6 +2,7 @@ import { FloatingField } from '@usemote/react';
 import { BASE_PACK } from '@usemote/core';
 import { esports } from '@usemote/pack-esports';
 import { Studio } from './Studio.js';
+import { Packs } from './Packs.js';
 import { Gallery } from './Gallery.js';
 import { Library } from './Library.js';
 
@@ -19,13 +20,15 @@ export function App(): React.ReactElement {
           <div className="eyebrow" style={{ color: '#8a8a85' }}>Mote · a background for every section</div>
           <h1 style={{ margin: '18px 0' }}>Floating shapes</h1>
           <p className="lede" style={{ color: '#c9c9c3', margin: '0 auto' }}>
-            Pick a behaviour, a shape pack and a theme. Deterministic, accessible,
-            and 7.7 kB — it fills its parent and sits behind your content.
+            Nine shape packs, seven motion behaviours. Deterministic,
+            accessible, and 7.9 kB — it fills its parent and sits behind
+            your content.
           </p>
         </div>
       </header>
 
       <Studio />
+      <Packs />
       <Gallery />
       <Library />
 

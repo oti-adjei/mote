@@ -2,8 +2,8 @@
 import { FloatingField } from '@usemote/react';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  AVOIDS, DIRECTIONS, MODES, PACKS, SETS, STAGE_BG, THEMES,
-  type Config, type PackId, decode, encode, toFieldProps,
+  AVOIDS, DIRECTIONS, MODES, PACKS, SETS, THEMES,
+  type Config, type PackId, decode, encode, stageColors, toFieldProps,
 } from './config.js';
 import { generate, type Target } from './codegen.js';
 
@@ -28,6 +28,7 @@ export function Studio(): React.ReactElement {
     setConfig((c) => ({ ...c, [key]: value }));
 
   const pack = PACKS[config.packId];
+  const stage = stageColors(config.packId, config.theme);
   const code = useMemo(() => generate(config, target), [config, target]);
   const fieldProps = useMemo(() => toFieldProps(config), [config]);
 
@@ -68,6 +69,22 @@ export function Studio(): React.ReactElement {
               ))}
             </select>
           </div>
+
+          {pack.description && (
+            <div style={{ font: '400 12px/1.45 var(--font)', color: 'var(--mute)', marginTop: -8 }}>
+              {pack.description}
+              {pack.swatches && (
+                <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
+                  {pack.swatches.map((c) => (
+                    <span key={c} title={c} style={{
+                      width: 18, height: 18, borderRadius: 4, background: c,
+                      border: '1px solid rgba(18,18,18,.15)',
+                    }} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="field-row">
             <label htmlFor="mode">Behaviour</label>
@@ -165,14 +182,14 @@ export function Studio(): React.ReactElement {
         </div>
 
         <div>
-          <div className="stage" style={{ background: STAGE_BG[config.theme] ?? '#121212' }}>
+          <div className="stage" style={{ background: stage.bg }}>
             {config.mode === 'gravity' && <span className="hint">CLICK TO THROW</span>}
             {config.mode !== 'gravity' && config.interactive && <span className="hint">MOVE YOUR CURSOR</span>}
             <FloatingField key={config.packId} {...fieldProps} />
             {config.avoid === 'center' && (
               <div className="stage-caption">
-                <div className="big" style={{ color: config.theme === 'light' || config.theme === 'lime' ? '#121212' : '#f2f2ee' }}>
-                  The game<br />goes on.
+                <div className="big" style={{ color: stage.ink }}>
+                  {pack.name}
                 </div>
               </div>
             )}

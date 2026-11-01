@@ -190,9 +190,33 @@ importers:
       '@usemote/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@usemote/pack-ai':
+        specifier: workspace:*
+        version: link:../../packages/pack-ai
+      '@usemote/pack-creative':
+        specifier: workspace:*
+        version: link:../../packages/pack-creative
+      '@usemote/pack-cyber':
+        specifier: workspace:*
+        version: link:../../packages/pack-cyber
+      '@usemote/pack-devtools':
+        specifier: workspace:*
+        version: link:../../packages/pack-devtools
+      '@usemote/pack-education':
+        specifier: workspace:*
+        version: link:../../packages/pack-education
       '@usemote/pack-esports':
         specifier: workspace:*
         version: link:../../packages/pack-esports
+      '@usemote/pack-fintech':
+        specifier: workspace:*
+        version: link:../../packages/pack-fintech
+      '@usemote/pack-health':
+        specifier: workspace:*
+        version: link:../../packages/pack-health
+      '@usemote/pack-space':
+        specifier: workspace:*
+        version: link:../../packages/pack-space
       '@usemote/react':
         specifier: workspace:*
         version: link:../../packages/react
@@ -237,7 +261,55 @@ importers:
         specifier: ^3.25.0
         version: 3.25.76
 
+  packages/pack-ai:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-creative:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-cyber:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-devtools:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-education:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/pack-esports:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-fintech:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-health:
+    devDependencies:
+      '@usemote/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/pack-space:
     devDependencies:
       '@usemote/core':
         specifier: workspace:*
