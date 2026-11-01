@@ -184,17 +184,23 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
 
       // A changed seed, count, pool or size means a different field; anything
       // else is applied live without disturbing positions mid-animation.
+      //
+      // Pool-shaped props are compared by CONTENT, not by presence. An
+      // earlier version rebuilt whenever `shapes`/`packs`/`theme` appeared in
+      // the patch at all, so any caller handing over a full options object —
+      // which is the natural thing for a framework wrapper to do — reset the
+      // field on every update and threw away all motion state.
       const structural =
-        next.seed !== undefined && next.seed !== prev.seed
-        || next.count !== undefined && next.count !== prev.count
-        || next.size !== undefined && next.size !== prev.size
-        || next.shapes !== undefined
-        || next.packs !== undefined
-        || next.set !== undefined && next.set !== prev.set
-        || next.theme !== undefined
-        || next.depth !== undefined && next.depth !== prev.depth
-        || next.mode !== undefined && next.mode !== prev.mode
-        || next.direction !== undefined && next.direction !== prev.direction;
+        changed(next.seed, prev.seed)
+        || changed(next.count, prev.count)
+        || changed(next.size, prev.size)
+        || changed(next.set, prev.set)
+        || changed(next.depth, prev.depth)
+        || changed(next.mode, prev.mode)
+        || changed(next.direction, prev.direction)
+        || poolChanged(next.shapes, prev.shapes)
+        || poolChanged(next.theme, prev.theme)
+        || packsChanged(next.packs, prev.packs);
 
       if (structural) build();
       else {
@@ -225,3 +231,30 @@ export function createField(host: HTMLElement, options: FieldOptions = {}): Fiel
   };
 }
 
+
+/** A patch key only counts as a change when it is present AND different. */
+function changed<T>(next: T | undefined, prev: T | undefined): boolean {
+  return next !== undefined && next !== prev;
+}
+
+/** Structural compare for `shapes` and `theme`, either of which may be an array. */
+function poolChanged(next: unknown, prev: unknown): boolean {
+  if (next === undefined || next === prev) return false;
+  return JSON.stringify(next) !== JSON.stringify(prev);
+}
+
+/**
+ * Packs compare by identity and version rather than deep-equality: a pack
+ * carries render functions, which never survive a JSON round-trip.
+ */
+function packsChanged(
+  next: FieldOptions['packs'],
+  prev: FieldOptions['packs'],
+): boolean {
+  if (next === undefined || next === prev) return false;
+  if (prev === undefined || next.length !== prev.length) return true;
+  return next.some((p, i) => {
+    const q = prev[i];
+    return q === undefined || p.id !== q.id || p.version !== q.version;
+  });
+}

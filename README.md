@@ -30,6 +30,8 @@ visual-regression tests are possible.
 |---|---|---|
 | [`@usemote/core`](./packages/core) | Zero-dependency engine. Shapes, themes, layout, 7 motion presets, DOM + string renderers. | 7.7 kB |
 | [`@usemote/react`](./packages/react) | `<FloatingField />`, SSR-safe. | 627 B |
+| [`@usemote/vue`](./packages/vue) | Vue 3 `<FloatingField />`, SSR-safe. | 799 B |
+| [`@usemote/svelte`](./packages/svelte) | `use:floatingField` action, SvelteKit-ready. | 396 B |
 | [`@usemote/pack-esports`](./packages/pack-esports) | 16 esports objects and 4 themes. | 1.8 kB |
 | [`@usemote/web-component`](./packages/web-component) | `<floating-field>` for plain HTML, Astro, Webflow, Framer. | 10.6 kB |
 | [`@usemote/mcp`](./packages/mcp) | MCP server + agent skill. | — |

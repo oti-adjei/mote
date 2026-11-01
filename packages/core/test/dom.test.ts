@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createField } from '../src/field.js';
 import { activeCount } from '../src/scheduler.js';
+import { BASE_PACK } from '../src/shapes.js';
 
 function host(w = 800, h = 400): HTMLElement {
   const parent = document.createElement('div');
@@ -147,5 +148,71 @@ describe('createField', () => {
     expect(styles.some((s) => s.filter.includes('blur'))).toBe(true);
     expect(styles.some((s) => s.opacity !== '')).toBe(true);
     field.destroy();
+  });
+});
+
+describe('update() compares pool props by content, not presence', () => {
+  // Regression: update() rebuilt whenever shapes/packs/theme appeared in the
+  // patch at all, so any caller handing over a full options object — the
+  // natural thing for a framework wrapper to do — reset the field on every
+  // update and discarded all motion state.
+  it('does not rebuild when a full options object is unchanged', () => {
+    const el = host();
+    const opts = { count: 5, seed: 1, shapes: ['circle', 'ring'], theme: 'dark', speed: 1 };
+    const field = createField(el, opts);
+    const first = el.children[0];
+
+    field.update({ ...opts, speed: 2 });
+    expect(el.children[0]).toBe(first);
+
+    field.update({ ...opts, shapes: ['circle', 'ring'] });
+    expect(el.children[0]).toBe(first);
+    field.destroy();
+  });
+
+  it('rebuilds when the shape list genuinely differs', () => {
+    const el = host();
+    const field = createField(el, { count: 4, seed: 2, shapes: ['circle'] });
+    const first = el.children[0];
+    field.update({ shapes: ['triangle'] });
+    expect(el.children[0]).not.toBe(first);
+    field.destroy();
+  });
+
+  it('compares packs by id and version, since they carry functions', () => {
+    const el = host();
+    const field = createField(el, { count: 4, seed: 1, packs: [BASE_PACK] });
+    const first = el.children[0];
+
+    // A fresh object with the same id and version is the same pack.
+    field.update({ packs: [{ ...BASE_PACK }] });
+    expect(el.children[0]).toBe(first);
+
+    field.update({ packs: [{ ...BASE_PACK, version: '9.9.9' }] });
+    expect(el.children[0]).not.toBe(first);
+    field.destroy();
+  });
+
+  it('rebuilds on an inline theme whose stops differ', () => {
+    const el = host();
+    const stops = [{ f: '#111', d: '#222', w: 1 }];
+    const field = createField(el, { count: 4, seed: 1, theme: stops });
+    const first = el.children[0];
+
+    field.update({ theme: [{ f: '#111', d: '#222', w: 1 }] });
+    expect(el.children[0]).toBe(first);
+
+    field.update({ theme: [{ f: '#999', d: '#222', w: 1 }] });
+    expect(el.children[0]).not.toBe(first);
+    field.destroy();
+  });
+
+  it('leaves the scheduler at one entry across many updates', () => {
+    const el = host();
+    const field = createField(el, { count: 3, seed: 1 });
+    for (let i = 2; i < 10; i++) field.update({ seed: i });
+    expect(activeCount()).toBe(1);
+    field.destroy();
+    expect(activeCount()).toBe(0);
   });
 });
