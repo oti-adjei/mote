@@ -66,6 +66,37 @@ function overlapsRect(
   );
 }
 
+/**
+ * Pushes a point to the nearest position that clears an avoid region.
+ *
+ * Rejection sampling alone can never be a guarantee: when a wide region and
+ * large shapes leave only a thin valid margin, some fraction of draws find
+ * nothing however large the budget. Projection closes that tail — it moves the
+ * point to the closest of the four escapes (left, right, above, below) that
+ * still fits the field, deterministically. Returns null when the region
+ * genuinely leaves nowhere to stand.
+ */
+function projectOut(
+  cx: number, cy: number, w: number, h: number, r: Rect, pad: number,
+  minX: number, maxX: number, minY: number, maxY: number,
+): { x: number; y: number } | null {
+  const left = r.x - pad - w / 2;
+  const right = r.x + r.w + pad + w / 2;
+  const above = r.y - pad - h / 2;
+  const below = r.y + r.h + pad + h / 2;
+
+  const options: Array<{ x: number; y: number; d: number }> = [];
+  if (left >= minX) options.push({ x: left, y: cy, d: Math.abs(cx - left) });
+  if (right <= maxX) options.push({ x: right, y: cy, d: Math.abs(right - cx) });
+  if (above >= minY) options.push({ x: cx, y: above, d: Math.abs(cy - above) });
+  if (below <= maxY) options.push({ x: cx, y: below, d: Math.abs(below - cy) });
+
+  if (options.length === 0) return null;
+  let best = options[0] as { x: number; y: number; d: number };
+  for (const o of options) if (o.d < best.d) best = o;
+  return { x: best.x, y: best.y };
+}
+
 /** Dimensions for one shape at a given base size and depth scale. */
 function sizeFor(shape: ShapeDef, size: number, zScale: number): { w: number; h: number } {
   const box = size * (shape.scale ?? 1) * zScale;
@@ -126,22 +157,31 @@ export function layout(
     const minY = h / 2;
     const maxY = Math.max(minY, height - h / 2);
 
+    // Placement is two-stage, because `avoid` is a documented guarantee
+    // rather than a preference. Stage one draws until it has a few candidates
+    // that actually clear the avoid region; stage two picks whichever of those
+    // sits furthest from its placed neighbours, giving the even, designed
+    // scatter that pure random placement never produces.
+    //
+    // A single-stage "score violations very negative" pass is not enough: with
+    // large shapes and a wide region every candidate in a small sample can be
+    // a violation, and the solver then quietly ships one.
+    const WANT_VALID = 6;
+    const MAX_DRAWS = 40;
+
     let bestX = 0;
     let bestY = 0;
     let bestScore = -Infinity;
-    const candidates = out.length === 0 ? 1 : 6;
+    let bestValidX = 0;
+    let bestValidY = 0;
+    let bestValidScore = -Infinity;
+    let validFound = 0;
+    const firstPlacement = out.length === 0;
 
-    for (let k = 0; k < candidates; k++) {
+    for (let k = 0; k < MAX_DRAWS; k++) {
       const cx = range(r, minX, maxX);
       const cy = range(r, minY, maxY);
 
-      // An avoid region is a hard constraint where possible: score it far
-      // below any valid position rather than rejecting outright, so a field
-      // whose avoid region covers everything still renders.
-      let score = 0;
-      if (avoid && overlapsRect(cx, cy, w, h, avoid, size * 0.15)) {
-        score -= 1e6;
-      }
       let nearest = Infinity;
       for (const p of out) {
         const dx = p.x - cx;
@@ -149,22 +189,54 @@ export function layout(
         const d = dx * dx + dy * dy;
         if (d < nearest) nearest = d;
       }
-      score += nearest === Infinity ? 0 : nearest;
+      const score = nearest === Infinity ? 0 : nearest;
 
       if (score > bestScore) {
         bestScore = score;
         bestX = cx;
         bestY = cy;
       }
+
+      const blocked = avoid !== null && overlapsRect(cx, cy, w, h, avoid, size * 0.15);
+      if (!blocked) {
+        validFound++;
+        if (score > bestValidScore) {
+          bestValidScore = score;
+          bestValidX = cx;
+          bestValidY = cy;
+        }
+        if (validFound >= WANT_VALID) break;
+      }
+
+      // With no avoid region the first particle has nothing to space against,
+      // so one draw is already optimal.
+      if (avoid === null && firstPlacement) break;
+      if (avoid === null && validFound >= WANT_VALID) break;
+    }
+
+    let px = validFound > 0 ? bestValidX : bestX;
+    let py = validFound > 0 ? bestValidY : bestY;
+
+    // No draw cleared the region. Project rather than ship a violation; only
+    // a region with no escape at all falls through to best-effort, where
+    // rendering a shape inside it still beats rendering nothing.
+    if (validFound === 0 && avoid !== null) {
+      const pushed = projectOut(
+        px, py, w, h, avoid, size * 0.15, minX, maxX, minY, maxY,
+      );
+      if (pushed) {
+        px = pushed.x;
+        py = pushed.y;
+      }
     }
 
     out.push({
       shape,
       colors: pickColors(stops, r),
-      x: bestX,
-      y: bestY,
-      homeX: bestX,
-      homeY: bestY,
+      x: px,
+      y: py,
+      homeX: px,
+      homeY: py,
       w,
       h,
       rot: range(r, -12, 12),

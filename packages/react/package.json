@@ -1,0 +1,36 @@
+{
+  "name": "@usemote/react",
+  "version": "0.1.0",
+  "description": "React component for Mote — deterministic floating-shape background fields.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "size": "size-limit"
+  },
+  "size-limit": [{ "path": "dist/index.js", "limit": "3 kB" }],
+  "peerDependencies": {
+    "@usemote/core": "workspace:^0.1.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@usemote/core": "workspace:*",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@testing-library/react": "^16.3.0",
+    "happy-dom": "^20.0.0"
+  },
+  "publishConfig": { "access": "public" }
+}
