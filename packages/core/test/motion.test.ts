@@ -3,6 +3,7 @@ import { layout } from '../src/layout.js';
 import { PRESETS, resolvePreset, makeAcross } from '../src/motion/index.js';
 import { radiusOf } from '../src/motion/collide.js';
 import { rng } from '../src/prng.js';
+import { renderFieldHTML } from '../src/render/string.js';
 import type { FieldContext, MotionId, MotionPreset, Particle } from '../src/types.js';
 
 const W = 800;
@@ -71,13 +72,30 @@ describe.each(ALL)('preset %s', (mode) => {
     );
   });
 
-  it('does not move at all on frame 0', () => {
-    const { particles } = harness(mode);
-    // init may reposition (gravity drops from above, across re-staggers),
-    // but no step has run, so x/y must still equal the home it was given.
+  it('renders a visible frame 0', () => {
+    // Frame 0 is what SSR and reduced-motion users get, and for them no step
+    // ever runs. A preset whose init parks particles outside the field —
+    // gravity used to lift them above the top edge for a drop-in — renders a
+    // permanently empty background for those users. Every particle must be
+    // at least partly on screen before any step.
+    const { particles, ctx } = harness(mode);
     for (const p of particles) {
-      expect(Number.isFinite(p.x)).toBe(true);
+      expect(p.x + p.w / 2, `${mode} left of field`).toBeGreaterThan(0);
+      expect(p.x - p.w / 2, `${mode} right of field`).toBeLessThan(ctx.width);
+      expect(p.y + p.h / 2, `${mode} above field`).toBeGreaterThan(0);
+      expect(p.y - p.h / 2, `${mode} below field`).toBeLessThan(ctx.height);
     }
+  });
+
+  it('renders a non-empty static field, as reduced motion would', () => {
+    const html = renderFieldHTML({
+      mode, count: 8, seed: 4, size: 60, width: 800, height: 400,
+    });
+    expect(html.match(/<div style=/g), mode).toHaveLength(8);
+    // Nothing parked entirely off-screen via a huge negative translate.
+    const offscreen = [...html.matchAll(/translate\((-?[\d.]+)px, (-?[\d.]+)px\)/g)]
+      .filter(([, x, y]) => Number(x) < -100 || Number(y) < -100 || Number(y) > 500);
+    expect(offscreen, `${mode} parks shapes off-screen at frame 0`).toHaveLength(0);
   });
 });
 

@@ -81,9 +81,8 @@ describe('avoid regions', () => {
     expect(resolveAvoid('none', W, H)).toBeNull();
     expect(resolveAvoid(undefined, W, H)).toBeNull();
     const c = resolveAvoid('center', W, H)!;
-    expect(c.w).toBeCloseTo(W * 0.55);
-    expect(c.h).toBeCloseTo(H * 0.45);
     expect(c.x).toBeCloseTo((W - c.w) / 2);
+    expect(c.y).toBeCloseTo((H - c.h) / 2);
     const t = resolveAvoid('top', W, H)!;
     expect(t.y).toBe(0);
     const b = resolveAvoid('bottom', W, H)!;
@@ -194,6 +193,40 @@ describe('avoid is a guarantee, not a preference', () => {
         (p) => p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h,
       );
       expect(intruders, region).toHaveLength(0);
+    }
+  });
+});
+
+describe('center region is aspect-aware', () => {
+  // Regression: a fixed 55% width left shapes resting on the ends of a
+  // headline in a wide, short hero — the exact case avoid exists for.
+  it('is 55% wide on a square stage', () => {
+    const c = resolveAvoid('center', 600, 600)!;
+    expect(c.w / 600).toBeCloseTo(0.55, 2);
+  });
+
+  it('widens toward 78% as the stage gets wider', () => {
+    const square = resolveAvoid('center', 600, 600)!;
+    const wide = resolveAvoid('center', 1400, 380)!;
+    expect(wide.w / 1400).toBeGreaterThan(square.w / 600);
+    expect(wide.w / 1400).toBeCloseTo(0.78, 2);
+  });
+
+  it('caps so it never swallows the whole stage', () => {
+    for (const [w, h] of [[4000, 200], [1200, 600], [300, 900]] as const) {
+      const c = resolveAvoid('center', w, h)!;
+      expect(c.w).toBeLessThan(w);
+      expect(c.h).toBeLessThan(h);
+      expect(c.x).toBeGreaterThanOrEqual(0);
+      expect(c.y).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('stays centred at every aspect', () => {
+    for (const [w, h] of [[1400, 380], [600, 600], [400, 1000]] as const) {
+      const c = resolveAvoid('center', w, h)!;
+      expect(c.x + c.w / 2).toBeCloseTo(w / 2, 5);
+      expect(c.y + c.h / 2).toBeCloseTo(h / 2, 5);
     }
   });
 });

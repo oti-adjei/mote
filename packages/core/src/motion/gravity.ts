@@ -29,10 +29,13 @@ function wake(p: Particle): void {
 
 export const gravity: MotionPreset = {
   id: 'gravity',
-  init(p, ctx, rand) {
-    // Start above the field so the first seconds are a drop, not a pile.
-    p.homeY = -rand() * ctx.height * 0.8;
-    p.y = p.homeY;
+  init(p, _ctx, rand) {
+    // Particles start where layout put them — inside the field — and fall
+    // from there. An earlier version lifted them above the top edge for a
+    // nicer drop-in, but frame 0 is what SSR and reduced-motion users get,
+    // and no loop ever runs for them: the field rendered permanently empty.
+    // A visible scatter that settles is worth more than an entrance nobody
+    // with reduced motion can see.
     p.vx = (rand() - 0.5) * 40;
     p.vy = 0;
     p.state.rotSpeed = (rand() - 0.5) * 60;
