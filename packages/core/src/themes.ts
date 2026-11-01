@@ -40,17 +40,35 @@ export function resolveTheme(
   return FALLBACK;
 }
 
-/** Weighted pick from the resolved stops. */
+/**
+ * Weighted pick from the resolved stops.
+ *
+ * The full palette rides along as `p` so a shape can reach for a third colour
+ * — a highlight that is neither its fill nor its detail — without hardcoding
+ * one and breaking theming.
+ */
 export function pickColors(stops: readonly ThemeStop[], r: Rng): ShapeColors {
+  const palette = stops.map((s) => s.f);
+
   let total = 0;
   for (const s of stops) total += s.w > 0 ? s.w : 0;
-  if (total <= 0) return { f: stops[0]?.f ?? '#8a8a8a', d: stops[0]?.d ?? '#121212' };
+  if (total <= 0) {
+    return { f: stops[0]?.f ?? '#8a8a8a', d: stops[0]?.d ?? '#121212', p: palette };
+  }
 
   let x = r() * total;
   for (const s of stops) {
     x -= s.w > 0 ? s.w : 0;
-    if (x < 0) return { f: s.f, d: s.d };
+    if (x < 0) return { f: s.f, d: s.d, p: palette };
   }
   const last = stops[stops.length - 1] as ThemeStop;
-  return { f: last.f, d: last.d };
+  return { f: last.f, d: last.d, p: palette };
+}
+
+/**
+ * A colour from the palette that is not the shape's own fill, falling back to
+ * its detail colour. Lets a shape add a highlight that still themes.
+ */
+export function altColor(c: ShapeColors): string {
+  return (c.p ?? []).find((x) => x !== c.f) ?? c.d;
 }

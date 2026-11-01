@@ -32,7 +32,7 @@ visual-regression tests are possible.
 | [`@usemote/react`](./packages/react) | `<FloatingField />`, SSR-safe. | 627 B |
 | [`@usemote/vue`](./packages/vue) | Vue 3 `<FloatingField />`, SSR-safe. | 799 B |
 | [`@usemote/svelte`](./packages/svelte) | `use:floatingField` action, SvelteKit-ready. | 396 B |
-| [`@usemote/pack-esports`](./packages/pack-esports) | 16 esports objects and 4 themes. | 1.8 kB |
+| [`@usemote/pack-*`](./packages) | **Nine shape packs, 137 shapes.** See below. | ~2 kB each |
 | [`@usemote/web-component`](./packages/web-component) | `<floating-field>` for plain HTML, Astro, Webflow, Framer. | 10.6 kB |
 | [`@usemote/mcp`](./packages/mcp) | MCP server + agent skill. | — |
 
@@ -64,6 +64,31 @@ import { FloatingField } from '@usemote/react';
 
 The field is a layer: it fills its nearest positioned ancestor, so that parent
 needs `position: relative` and content above it needs `position: relative` too.
+
+## Shape packs
+
+Each pack is a domain vocabulary with its own palette, typeface and curated set
+of geometric primitives. Install only the ones you use.
+
+| Pack | Shapes | What's in it |
+|---|---|---|
+| `esports` | 16 | Controllers, trophies, keycaps, score tags |
+| `space` | 15 | Planets, rockets, satellites, comets, constellations |
+| `cyber` | 15 | Locks, shields, fingerprints, radar sweeps, access tags |
+| `health` | 15 | Crosses, ECG lines, capsules, DNA, wearables |
+| `education` | 16 | Books, caps, apples, atoms, chalk formulas |
+| `devtools` | 15 | Terminals, braces, branches, packages, diffs |
+| `ai` | 15 | Neural nets, chips, sparkles, prompts, embeddings |
+| `fintech` | 15 | Cards, coins, candlesticks, QR codes, currency glyphs |
+| `creative` | 15 | Pens, swatches, bezier curves, type specimens |
+
+A pack is one file of plain data and pure functions — no build step, no core
+changes. See the [authoring rules](./CONTRIBUTING.md#authoring-a-shape-pack)
+or start from the template:
+
+```bash
+pnpm dlx shadcn@latest add oti-adjei/mote/mote-pack-starter
+```
 
 ## Design principles
 

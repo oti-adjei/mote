@@ -1,23 +1,47 @@
 /** Playground state, and the URL encoding that makes a config shareable. */
 import { BASE_PACK, type MotionId, type SetId } from '@usemote/core';
 import { esports } from '@usemote/pack-esports';
+import { space } from '@usemote/pack-space';
+import { cyber } from '@usemote/pack-cyber';
+import { health } from '@usemote/pack-health';
+import { education } from '@usemote/pack-education';
+import { devtools } from '@usemote/pack-devtools';
+import { ai } from '@usemote/pack-ai';
+import { fintech } from '@usemote/pack-fintech';
+import { creative } from '@usemote/pack-creative';
 
-export const PACKS = { base: BASE_PACK, esports } as const;
+export const PACKS = {
+  base: BASE_PACK,
+  esports,
+  space,
+  cyber,
+  health,
+  education,
+  devtools,
+  ai,
+  fintech,
+  creative,
+} as const;
 export type PackId = keyof typeof PACKS;
 
 export const MODES: MotionId[] = ['static', 'bob', 'hop', 'drift', 'across', 'bounce', 'gravity'];
 export const SETS: SetId[] = ['mixed', 'geo', 'objects'];
-export const THEMES = ['dark', 'light', 'lime', 'mono'] as const;
+export const THEMES = ['dark', 'light', 'accent', 'mono'] as const;
 export const AVOIDS = ['none', 'center', 'top', 'bottom'] as const;
 export const DIRECTIONS = ['right', 'left', 'up', 'down'] as const;
 
-/** Stage background per theme, so shapes are always legible against it. */
-export const STAGE_BG: Record<string, string> = {
-  dark: '#121212',
-  light: '#efeee8',
-  lime: '#d4ff1e',
-  mono: '#121212',
-};
+/**
+ * Stage background and ink come from the pack itself when it declares them,
+ * so each pack's demo sits on the ground its designer chose rather than a
+ * single hardcoded palette.
+ */
+export function stageColors(packId: PackId, theme: string): { bg: string; ink: string } {
+  const pack = PACKS[packId];
+  return {
+    bg: pack.background?.[theme] ?? (theme === 'light' ? '#efeee8' : '#121212'),
+    ink: pack.ink?.[theme] ?? (theme === 'light' ? '#121212' : '#f2f2ee'),
+  };
+}
 
 export interface Config {
   packId: PackId;
