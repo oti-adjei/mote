@@ -23,6 +23,7 @@ export { register, activeCount, tickAllForTest } from './scheduler.js';
 export { validatePack } from './validate.js';
 
 export type {
+  Anchor,
   AvoidId,
   Direction,
   FieldContext,

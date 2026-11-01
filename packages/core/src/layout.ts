@@ -9,7 +9,7 @@ import { pick, range, rng, stratified } from './prng.js';
 import { pickColors, resolveTheme } from './themes.js';
 import { resolvePacks, resolvePool } from './pool.js';
 import { BASE_PACK } from './shapes.js';
-import type { AvoidId, FieldOptions, Particle, Rect, ShapeDef } from './types.js';
+import type { Anchor, AvoidId, FieldOptions, Particle, Rect, ShapeDef } from './types.js';
 
 export const DEFAULTS = {
   mode: 'drift',
@@ -103,6 +103,37 @@ function projectOut(
   let best = options[0] as { x: number; y: number; d: number };
   for (const o of options) if (o.d < best.d) best = o;
   return { x: best.x, y: best.y };
+}
+
+/**
+ * The region an anchored particle is placed within, as a fraction of the
+ * field. Edges get a generous band so large media sits *in* the margin rather
+ * than hugging the very edge; corners get a quadrant.
+ */
+const ANCHOR_RECTS: Record<Anchor, [number, number, number, number]> = {
+  // x, y, w, h — all 0..1
+  left: [0, 0.1, 0.34, 0.8],
+  right: [0.66, 0.1, 0.34, 0.8],
+  top: [0.1, 0, 0.8, 0.34],
+  bottom: [0.1, 0.66, 0.8, 0.34],
+  'top-left': [0, 0, 0.42, 0.42],
+  'top-right': [0.58, 0, 0.42, 0.42],
+  'bottom-left': [0, 0.58, 0.42, 0.42],
+  'bottom-right': [0.58, 0.58, 0.42, 0.42],
+  center: [0.25, 0.25, 0.5, 0.5],
+};
+
+/**
+ * Breathing room kept between anchored media and the field edge.
+ *
+ * Clamping a large frame to exactly `width - w/2` is correct arithmetic and
+ * looks wrong: flush against the boundary it reads as clipped rather than
+ * placed, and its outline ring and drop shadow are cut off by the field's
+ * own `overflow: hidden`. Anchored media is big enough that the gap has to
+ * scale with the field rather than being a fixed few pixels.
+ */
+function anchorInset(width: number, height: number): number {
+  return Math.min(48, Math.max(12, Math.min(width, height) * 0.04));
 }
 
 /** Dimensions for one shape at a given base size and depth scale. */
@@ -259,7 +290,63 @@ export function layout(
     });
   }
 
-  // Near shapes paint last so depth reads correctly in DOM order.
+  // Media particles: one each, anchored rather than scattered, and appended
+  // after the pool shapes so they paint in front by default.
+  for (const m of opts.media ?? []) {
+    const z = 1;
+    const { w, h } = sizeFor(m, size, 1);
+    const anchor = m.place ?? 'center';
+    const [ax, ay, aw, ah] = ANCHOR_RECTS[anchor] ?? ANCHOR_RECTS.center;
+
+    // Clamp into the field, then centre within the anchor band when the
+    // media is wider than the band — a large portrait should overflow its
+    // band symmetrically rather than be shoved against an edge.
+    const inset = anchorInset(width, height);
+    const bandX = ax * width + (ax > 0 ? inset : 0);
+    const bandY = ay * height + (ay > 0 ? inset : 0);
+    const bandW = aw * width - (ax > 0 ? inset : 0) - (ax + aw >= 1 ? inset : 0);
+    const bandH = ah * height - (ay > 0 ? inset : 0) - (ay + ah >= 1 ? inset : 0);
+
+    const cx = bandW >= w
+      ? bandX + range(r, w / 2, bandW - w / 2)
+      : bandX + bandW / 2;
+    const cy = bandH >= h
+      ? bandY + range(r, h / 2, bandH - h / 2)
+      : bandY + bandH / 2;
+
+    // Media larger than the field itself still has to go somewhere; centring
+    // beats pinning it to one edge.
+    const minX = Math.min(width / 2, w / 2 + inset);
+    const maxX = Math.max(width / 2, width - w / 2 - inset);
+    const minY = Math.min(height / 2, h / 2 + inset);
+    const maxY = Math.max(height / 2, height - h / 2 - inset);
+
+    const px = Math.min(maxX, Math.max(minX, cx));
+    const py = Math.min(maxY, Math.max(minY, cy));
+
+    out.push({
+      shape: m,
+      colors: pickColors(stops, r),
+      x: px,
+      y: py,
+      homeX: px,
+      homeY: py,
+      w,
+      h,
+      rot: 0,
+      scale: 1,
+      opacity: 1,
+      blur: 0,
+      z,
+      vx: 0,
+      vy: 0,
+      phase: r(),
+      state: {},
+    });
+  }
+
+  // Near shapes paint last so depth reads correctly in DOM order. Media sits
+  // at z=1, so it lands at the end and paints in front.
   if (depth) out.sort((a, b) => a.z - b.z);
   return out;
 }

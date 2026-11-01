@@ -34,6 +34,7 @@ visual-regression tests are possible.
 | [`@usemote/svelte`](./packages/svelte) | `use:floatingField` action, SvelteKit-ready. | 396 B |
 | [`@usemote/pack-*`](./packages) | **Nine shape packs, 137 shapes.** See below. | ~2 kB each |
 | [`@usemote/web-component`](./packages/web-component) | `<floating-field>` for plain HTML, Astro, Webflow, Framer. | 10.6 kB |
+| [`@usemote/media`](./packages/media) | Window frames and media particles — photos, GIFs, video. | 5.1 kB |
 | [`@usemote/mcp`](./packages/mcp) | MCP server + agent skill. | — |
 
 Sizes are brotlied and enforced in CI.

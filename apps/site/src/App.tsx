@@ -3,6 +3,7 @@ import { BASE_PACK } from '@usemote/core';
 import { esports } from '@usemote/pack-esports';
 import { Studio } from './Studio.js';
 import { Packs } from './Packs.js';
+import { Frames } from './Frames.js';
 import { Gallery } from './Gallery.js';
 import { Library } from './Library.js';
 
@@ -29,6 +30,7 @@ export function App(): React.ReactElement {
 
       <Studio />
       <Packs />
+      <Frames />
       <Gallery />
       <Library />
 

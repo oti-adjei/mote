@@ -38,7 +38,10 @@ function styleOf(p: Particle): string {
 export function renderParticles(particles: readonly Particle[]): string {
   let out = '';
   for (const p of particles) {
-    out += `<div style="${styleOf(p)}">${p.shape.render(p.colors)}</div>`;
+    // Width is passed so size-aware shapes — window frames, which drop chrome
+    // detail by rendered width — build at their real size rather than a
+    // reference one. Drawn SVG shapes ignore it.
+    out += `<div style="${styleOf(p)}">${p.shape.render(p.colors, undefined, p.w)}</div>`;
   }
   return out;
 }

@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@usemote/core': new URL('../../packages/core/src/index.ts', import.meta.url).pathname,
       '@usemote/react': new URL('../../packages/react/src/index.ts', import.meta.url).pathname,
+      '@usemote/media': new URL('../../packages/media/src/index.ts', import.meta.url).pathname,
       '@usemote/pack-esports': new URL('../../packages/pack-esports/src/index.ts', import.meta.url).pathname,
       '@usemote/pack-space': new URL('../../packages/pack-space/src/index.ts', import.meta.url).pathname,
       '@usemote/pack-cyber': new URL('../../packages/pack-cyber/src/index.ts', import.meta.url).pathname,

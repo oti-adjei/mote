@@ -21,6 +21,12 @@ export interface ShapeColors {
   p?: readonly string[];
 }
 
+/** Where an anchored particle sits in the field. */
+export type Anchor =
+  | 'left' | 'right' | 'top' | 'bottom'
+  | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  | 'center';
+
 export interface ShapeDef {
   /** Stable, unique within its pack. Used in `shapes="…"`. */
   id: string;
@@ -34,8 +40,24 @@ export interface ShapeDef {
   scale?: number;
   /** Optional named variants, passed back to `render`. */
   variants?: string[];
-  /** Returns an SVG string. Must not emit `id` attributes or `<style>`. */
-  render(c: ShapeColors, variant?: string): string;
+  /**
+   * Returns markup. Usually an SVG string, but any self-contained HTML works
+   * — the renderer only ever assigns it as the particle's contents, so an
+   * `<img>` or a framed `<video>` participates in the field exactly like a
+   * drawn shape. Must not emit `id` attributes or `<style>` either way: a
+   * shape is inlined many times over, so ids collide and CSS leaks.
+   */
+  render(c: ShapeColors, variant?: string, width?: number): string;
+
+  /**
+   * Anchor this particle to a region instead of scattering it.
+   *
+   * Only meaningful for `media` items. Large content cannot use `avoid`:
+   * rejection sampling assumes shapes small enough to tuck around a region,
+   * and a 280px portrait on a 700px hero has no valid position at all. Media
+   * therefore needs placement rather than avoidance.
+   */
+  place?: Anchor;
 }
 
 /** One weighted entry in a theme. Higher `w` appears more often. */
@@ -177,6 +199,16 @@ export interface FieldOptions {
   /** `across` only. */
   direction?: Direction;
   paused?: boolean;
+
+  /**
+   * Media particles, each rendered exactly once in addition to the `count`
+   * shapes drawn from the pool.
+   *
+   * Media is singular — you want *this* portrait, once, on the right — so it
+   * cannot live in the shape pool, where a seed decides how often it appears
+   * or whether it appears at all.
+   */
+  media?: ShapeDef[];
 }
 
 export interface FieldHandle {

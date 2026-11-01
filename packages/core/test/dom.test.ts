@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createField } from '../src/field.js';
 import { activeCount } from '../src/scheduler.js';
 import { BASE_PACK } from '../src/shapes.js';
+import type { ShapeDef } from '../src/types.js';
 
 function host(w = 800, h = 400): HTMLElement {
   const parent = document.createElement('div');
@@ -214,5 +215,97 @@ describe('update() compares pool props by content, not presence', () => {
     expect(activeCount()).toBe(1);
     field.destroy();
     expect(activeCount()).toBe(0);
+  });
+});
+
+describe('media playback is a runtime decision', () => {
+  const clip: ShapeDef = {
+    id: 'clip', label: 'Clip', kind: 'obj', ar: 16 / 9,
+    render: () =>
+      '<video data-mote-media src="/a.webm" poster="/a.jpg" muted loop playsinline ' +
+      'style="width:100%;height:100%"></video>',
+  };
+
+  function videos(el: HTMLElement): HTMLVideoElement[] {
+    return Array.from(el.querySelectorAll('video'));
+  }
+
+  function trackPlayback(): { played: number; paused: number } {
+    const state = { played: 0, paused: 0 };
+    HTMLVideoElement.prototype.play = function () {
+      state.played++;
+      return Promise.resolve();
+    };
+    HTMLVideoElement.prototype.pause = function () {
+      state.paused++;
+    };
+    return state;
+  }
+
+  it('emits no autoplay attribute, so SSR and client markup match', () => {
+    const el = host();
+    const field = createField(el, { count: 1, media: [clip] });
+    const v = videos(el)[0]!;
+    expect(v.hasAttribute('autoplay')).toBe(false);
+    expect(v.getAttribute('poster')).toBe('/a.jpg');
+    field.destroy();
+  });
+
+  it('starts playback on mount when motion is allowed', () => {
+    const state = trackPlayback();
+    const el = host();
+    const field = createField(el, { count: 1, media: [clip] });
+    expect(state.played).toBeGreaterThan(0);
+    field.destroy();
+  });
+
+  it('never starts playback under reduced motion', () => {
+    mockReducedMotion(true);
+    const state = trackPlayback();
+    const el = host();
+    const field = createField(el, { count: 1, media: [clip] });
+    // The poster frame is what a reduced-motion user is left with, and that
+    // is the correct outcome — but it must never have played.
+    expect(state.played).toBe(0);
+    expect(videos(el)).toHaveLength(1);
+    field.destroy();
+  });
+
+  it('pauses when the field is paused and resumes with it', () => {
+    const state = trackPlayback();
+    const el = host();
+    const field = createField(el, { count: 1, media: [clip] });
+    const playedOnMount = state.played;
+
+    field.pause();
+    expect(state.paused).toBeGreaterThan(0);
+
+    field.resume();
+    expect(state.played).toBeGreaterThan(playedOnMount);
+    field.destroy();
+  });
+
+  it('releases decoders on destroy rather than leaving them detached', () => {
+    const state = trackPlayback();
+    const el = host();
+    const field = createField(el, { count: 1, media: [clip] });
+    const before = state.paused;
+    field.destroy();
+    expect(state.paused).toBeGreaterThan(before);
+    expect(el.children).toHaveLength(0);
+  });
+
+  it('swallows a refused autoplay instead of surfacing a rejection', async () => {
+    const el = host();
+    HTMLVideoElement.prototype.play = function () {
+      return Promise.reject(new Error('NotAllowedError'));
+    };
+    const onUnhandled = vi.fn();
+    process.on('unhandledRejection', onUnhandled);
+    const field = createField(el, { count: 1, media: [clip] });
+    await new Promise((r) => setTimeout(r, 20));
+    process.off('unhandledRejection', onUnhandled);
+    expect(onUnhandled).not.toHaveBeenCalled();
+    field.destroy();
   });
 });

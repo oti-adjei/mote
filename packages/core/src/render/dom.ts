@@ -16,6 +16,15 @@ import type { Particle } from '../types.js';
 export interface DomRenderer {
   mount(particles: readonly Particle[]): void;
   draw(particles: readonly Particle[]): void;
+  /**
+   * Start or stop any media the particles contain.
+   *
+   * Playback is a RUNTIME decision, never an attribute: markup must be
+   * byte-identical on the server and the client or hydration mismatches, so a
+   * video is emitted without `autoplay` and started here instead. Reduced
+   * motion and offscreen fields therefore simply never call play().
+   */
+  setMediaPlayback(play: boolean): void;
   destroy(): void;
 }
 
@@ -38,7 +47,7 @@ export function createDomRenderer(host: HTMLElement): DomRenderer {
       el.style.height = `${p.h.toFixed(2)}px`;
       el.style.transformOrigin = 'center';
       el.style.willChange = 'transform';
-      el.innerHTML = p.shape.render(p.colors);
+      el.innerHTML = p.shape.render(p.colors, undefined, p.w);
 
       if (p.opacity !== 1) el.style.opacity = String(p.opacity);
       if (p.blur > 0.05) el.style.filter = `blur(${p.blur.toFixed(2)}px)`;
@@ -78,11 +87,28 @@ export function createDomRenderer(host: HTMLElement): DomRenderer {
     }
   }
 
+  function setMediaPlayback(play: boolean): void {
+    const videos = host.querySelectorAll<HTMLVideoElement>('video[data-mote-media]');
+    for (const v of videos) {
+      if (play) {
+        // Autoplay can be refused (a non-muted video, a power-saving mode).
+        // A background must never surface that as an unhandled rejection —
+        // the poster frame is a perfectly good outcome.
+        void v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    }
+  }
+
   function destroy(): void {
+    // Release decoders explicitly. Dropping the nodes alone can leave a
+    // detached video holding its buffer until GC runs.
+    setMediaPlayback(false);
     host.textContent = '';
     nodes = [];
     lastTransform = [];
   }
 
-  return Object.assign({ mount, draw, destroy }, { adopt });
+  return Object.assign({ mount, draw, setMediaPlayback, destroy }, { adopt });
 }
