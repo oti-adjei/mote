@@ -158,3 +158,42 @@ describe('pools and themes', () => {
     expect(Math.max(...phases)).toBeGreaterThan(0.8);
   });
 });
+
+describe('avoid is a guarantee, not a preference', () => {
+  // Regression: with few candidate draws, large shapes and a wide region,
+  // every candidate could land inside the avoid rect and the solver shipped
+  // one anyway. Exercised across sizes, counts and seeds.
+  it('keeps the region clear across a wide parameter sweep', () => {
+    const avoid = resolveAvoid('center', W, H)!;
+    for (const size of [40, 96, 140]) {
+      for (const count of [4, 9, 30]) {
+        for (const seed of [1, 7, 31, 'hero']) {
+          const out = layout({ count, size, seed, avoid: 'center' }, W, H);
+          const intruders = out.filter(
+            (p) =>
+              p.x > avoid.x && p.x < avoid.x + avoid.w &&
+              p.y > avoid.y && p.y < avoid.y + avoid.h,
+          );
+          expect(intruders, `size=${size} count=${count} seed=${seed}`).toHaveLength(0);
+        }
+      }
+    }
+  });
+
+  it('still renders when the avoid region covers everything', () => {
+    const out = layout({ count: 5, avoid: { x: 0, y: 0, w: W, h: H } }, W, H);
+    expect(out).toHaveLength(5);
+    for (const p of out) expect(Number.isFinite(p.x)).toBe(true);
+  });
+
+  it('honours top and bottom regions too', () => {
+    for (const region of ['top', 'bottom'] as const) {
+      const r = resolveAvoid(region, W, H)!;
+      const out = layout({ count: 14, size: 70, seed: 5, avoid: region }, W, H);
+      const intruders = out.filter(
+        (p) => p.x > r.x && p.x < r.x + r.w && p.y > r.y && p.y < r.y + r.h,
+      );
+      expect(intruders, region).toHaveLength(0);
+    }
+  });
+});
