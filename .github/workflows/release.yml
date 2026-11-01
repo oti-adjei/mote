@@ -1,0 +1,54 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Resolve and print what would publish, without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write        # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v2
+        with:
+          install: true
+          cache: true
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm size
+
+      - name: Publish changed packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DRY: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          for dir in packages/*/; do
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            private=$(node -p "require('./$dir/package.json').private || false")
+            [ "$private" = "true" ] && continue
+
+            # A published version is final — never republish. CI skipping here
+            # is the backstop for the rule in CONTRIBUTING.md.
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "skip $name@$version — already published"
+              continue
+            fi
+
+            if [ "$DRY" = "true" ]; then
+              echo "would publish $name@$version"
+            else
+              echo "publishing $name@$version"
+              (cd "$dir" && npm publish --provenance --access public)
+            fi
+          done
