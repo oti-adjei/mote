@@ -46,8 +46,16 @@ export function resolveAvoid(
   if (avoid === undefined || avoid === 'none') return null;
   if (typeof avoid === 'object') return avoid;
   if (avoid === 'center') {
-    const w = width * 0.55;
-    const h = height * 0.45;
+    // The region has to be aspect-aware. A fixed 55% looked right on a square
+    // stage but left shapes sitting on the ends of a headline in a wide, short
+    // hero — which is the exact case `avoid` exists to serve. Content in a
+    // wide box is wide, so the region widens with the box: 55% at 1:1, easing
+    // to 78% by 3:1. Height tightens slightly as it widens, since a short box
+    // holds fewer lines.
+    const aspect = width / Math.max(1, height);
+    const t = Math.min(1, Math.max(0, (aspect - 1) / 2));
+    const w = width * (0.55 + 0.23 * t);
+    const h = height * (0.45 + 0.1 * t);
     return { x: (width - w) / 2, y: (height - h) / 2, w, h };
   }
   if (avoid === 'top') return { x: 0, y: 0, w: width, h: height * 0.4 };
