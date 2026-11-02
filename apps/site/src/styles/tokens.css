@@ -1,0 +1,75 @@
+/**
+ * Design tokens, extracted from the Stillform / Mote export before any
+ * component was written — per the handoff's "extract tokens first" rule.
+ *
+ * These are the visual contract. Change a value here, not in a component.
+ */
+
+/* ── Typefaces ──────────────────────────────────────────────────────────
+ * Noi Grotesk (display) and Fusion Neue (body) are COMMERCIAL faces whose
+ * reuse rights are unconfirmed — see FONTS.md. The @font-face blocks below
+ * load them from /fonts, which is gitignored, so a clone without a licence
+ * simply falls through to the open stack and the site still reads correctly.
+ */
+@font-face {
+  font-family: Noi;
+  src: url('/fonts/noi-grotesk-regular-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Noi;
+  src: url('/fonts/noi-grotesk-semibold-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: Fusion;
+  src: url('/fonts/fusion-neue-regular-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Fusion;
+  src: url('/fonts/fusion-neue-semibold-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+:root {
+  /* ── Colour ───────────────────────────────────────────────────────── */
+  --paper: #fff;
+  --stone: #f3f3ef;
+  --ink: #282828;
+  --muted: #62625e;
+  --line: #dcdcd5;
+  --coral: #e8725c;
+  --plum: #3f172a;
+
+  /* Expressive layer */
+  --blush: #faf0f2;
+  --pink: #f45a8b;
+  --pink-soft: #f9dce5;
+  --frame: #b7a5ab;
+
+  /* ── Type ─────────────────────────────────────────────────────────── */
+  --display: Noi, 'Schibsted Grotesk', 'Helvetica Neue', system-ui, sans-serif;
+  --body: Fusion, 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+  --annotation: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* ── Geometry ─────────────────────────────────────────────────────── */
+  --r: 16px;
+  --control: 8px;
+  --edge: 4px;          /* the expressive layer's sharp radius */
+  --max: 1320px;
+  --gutter: clamp(24px, 5vw, 80px);
+
+  /* ── Motion ───────────────────────────────────────────────────────── */
+  --duration: 200ms;
+
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.6;
+}

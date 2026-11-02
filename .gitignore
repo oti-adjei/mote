@@ -18,3 +18,8 @@ test-results/
 specs/
 plans/
 planning/
+
+# Commercial webfonts (Noi Grotesk, Fusion Neue) pulled from a Framer CDN.
+# Rights unconfirmed — see apps/site/FONTS.md. Present locally so the site
+# matches the design; never committed, never deployed, until licensed.
+apps/site/public/fonts/*.woff2

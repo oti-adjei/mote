@@ -1,0 +1,141 @@
+/**
+ * Additions beyond the design export.
+ *
+ * The export covered six pages with illustrative geometry. These rules cover
+ * what it marked as pending or did not reach: live engine fields, the pack
+ * detail pages, and the media/frames studies. They use the export's own
+ * tokens and keep to its visual language — blush grounds, hairline frames,
+ * sharp 4px radii, monospace annotations.
+ */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* A field is a layer: it fills its positioned ancestor and never intercepts. */
+.field { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+.sample-art, .play-stage, .hero-stage, .pack-preview { position: relative; }
+
+/* ── Pack tiles gain a live preview strip ──────────────────────────── */
+.pack-preview {
+  height: 132px;
+  border: 1px solid var(--frame);
+  border-radius: var(--edge);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* ── Pack detail ───────────────────────────────────────────────────── */
+.back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 44px; font-size: 14px; text-decoration: none;
+  font-family: var(--annotation);
+}
+.back-link:hover { color: var(--plum); }
+
+.pack-detail-page { padding-bottom: 64px; }
+
+.pack-hero {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 56px; align-items: center;
+  padding: 32px 0 56px; border-bottom: 1px solid var(--line);
+}
+.pack-hero h1 { font-size: clamp(44px, 6vw, 88px); margin: 16px 0 24px; }
+.pack-hero-stage {
+  position: relative; min-height: 380px;
+  border: 1px solid var(--frame); border-radius: var(--edge); overflow: hidden;
+}
+.pack-hero-label {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  text-align: center; pointer-events: none; padding: 24px;
+}
+.pack-hero-label strong { font-size: clamp(28px, 3.4vw, 48px); display: block; letter-spacing: -.03em; }
+.pack-hero-label span { font: 12px var(--annotation); letter-spacing: .08em; opacity: .7; display: block; margin-top: 8px; }
+
+.pack-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 32px; margin-top: 32px; }
+.pack-stats dt { font: 11px var(--annotation); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.pack-stats dd { margin: 6px 0 0; font-family: var(--display); font-size: 28px; letter-spacing: -.02em; }
+.pack-stats dd code { font: 13px var(--annotation); }
+
+.pack-section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+.pack-section h2 { font-size: clamp(28px, 3.4vw, 44px); margin: 16px 0 20px; }
+
+/* ── Themes ────────────────────────────────────────────────────────── */
+.theme-rows { display: grid; gap: 20px; margin-top: 32px; }
+.theme-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 24px; align-items: start; padding-top: 16px; border-top: 1px solid var(--line); }
+.theme-name { font: 12px var(--annotation); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.stop-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 20px; }
+.stop-list li { display: flex; align-items: center; gap: 8px; font: 12px var(--annotation); }
+.stop-swatch {
+  width: 28px; height: 28px; border-radius: 4px; border: 1px solid var(--frame);
+  display: grid; place-items: center; flex: none;
+}
+.stop-swatch span { width: 10px; height: 10px; border-radius: 2px; display: block; }
+.stop-weight { color: var(--muted); }
+
+.swatch-strip { display: flex; gap: 8px; margin-top: 28px; }
+.swatch-strip span { width: 48px; height: 48px; border-radius: var(--edge); border: 1px solid var(--frame); }
+
+/* ── Shape grids ───────────────────────────────────────────────────── */
+.shape-grid {
+  list-style: none; margin: 28px 0 0; padding: 24px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 12px;
+  border: 1px solid var(--frame); border-radius: var(--edge);
+}
+.shape-cell { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.shape-art {
+  height: 110px; display: grid; place-items: center;
+  background: rgba(255, 255, 255, .05); border-radius: var(--edge);
+}
+.shape-cap { display: flex; justify-content: space-between; gap: 8px; font: 10px var(--annotation); letter-spacing: .06em; color: #8c8c88; min-width: 0; }
+.shape-cap span { color: #efefe9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.type-specimen {
+  font-size: clamp(28px, 4vw, 56px); line-height: 1.2; letter-spacing: -.02em;
+  margin-top: 28px; padding: 32px; background: var(--blush);
+  border: 1px solid var(--frame); border-radius: var(--edge); max-width: none;
+}
+
+/* ── Media studies ─────────────────────────────────────────────────── */
+.media-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 40px; }
+.media-notes h3 { font-size: 20px; margin-bottom: 12px; }
+.media-notes p { color: var(--muted); font-size: 15px; }
+
+.tier-grid, .kind-grid {
+  margin-top: 32px; padding: 28px;
+  border: 1px solid var(--frame); border-radius: var(--edge);
+}
+.tier-row { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; padding: 20px 0; }
+.tier-row + .tier-row { border-top: 1px solid rgba(255, 255, 255, .12); }
+.tier-label { font: 11px var(--annotation); letter-spacing: .12em; text-transform: uppercase; color: #8c8c88; width: 84px; flex: none; padding-top: 10px; }
+.tier-grid figcaption, .kind-grid figcaption { font: 10px var(--annotation); letter-spacing: .08em; color: #8c8c88; margin-top: 10px; }
+.tier-grid figure, .kind-grid figure { margin: 0; min-width: 0; }
+.kind-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); gap: 28px; }
+
+/* ── Playground extras ─────────────────────────────────────────────── */
+.chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-wrap .chip { min-height: 36px; padding: 6px 10px; font: 11px var(--annotation); }
+.studio-main .code-block { margin-top: 0; }
+.play-label { font-family: var(--annotation); }
+
+/* ── Roadmap ───────────────────────────────────────────────────────── */
+.road-caveat { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14px; }
+.road-caveat span { color: var(--plum); margin-right: 4px; }
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pack-hero { grid-template-columns: 1fr; gap: 32px; }
+  .media-notes { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 767px) {
+  .pack-stats { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pack-hero-stage { min-height: 300px; }
+  .theme-row { grid-template-columns: 1fr; gap: 12px; }
+  .shape-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); padding: 16px; }
+  .shape-art { height: 88px; }
+  .tier-row { gap: 20px; }
+  .tier-label { width: 100%; }
+  .kind-grid { grid-template-columns: 1fr; }
+  .type-specimen { padding: 20px; }
+}
