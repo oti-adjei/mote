@@ -16,6 +16,7 @@ export default defineConfig({
         playground: page('playground'),
         packs: page('packs'),
         examples: page('examples'),
+        mcp: page('mcp'),
         docs: page('docs'),
         pro: page('pro'),
         roadmap: page('roadmap'),

@@ -21,6 +21,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Syne:wght@800&family=Chakra+Petch:wght@700&family=Figtree:wght@800&family=Young+Serif&family=JetBrains+Mono:wght@400;500;800&family=Space+Grotesk:wght@700&family=Manrope:wght@800&family=Instrument+Serif&display=swap');
 
 :root {
+  /* Light-only site: pin native UI (select popups, scrollbars) to light
+     even when the OS is in dark mode. */
+  color-scheme: light;
+
   /* ── Colour ───────────────────────────────────────────────────────── */
   --paper: #fff;
   --stone: #f3f3ef;
