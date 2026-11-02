@@ -23,11 +23,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm typecheck
-
-      # Build precedes test: cross-package tests import @usemote/core through
-      # its published entry points, so a stale dist/ tests the wrong code.
+      # Build comes FIRST, before typecheck as well as before test.
+      #
+      # Dependent packages import @usemote/core through its published entry
+      # points, so they need its emitted .d.ts to typecheck at all and its
+      # dist/ to test against the real thing. On a developer machine a stale
+      # dist/ hides this; on a fresh checkout it fails immediately, which is
+      # how it was found.
       - run: pnpm build
+
+      - run: pnpm typecheck
 
       - run: pnpm test
 
