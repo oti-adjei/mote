@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cyrb53, normaliseSeed, rng, stratified } from '../src/prng.js';
+import { cyrb53, normaliseSeed, randomSeed, rng, stratified } from '../src/prng.js';
 
 describe('cyrb53', () => {
   it('is stable for known inputs', () => {
@@ -100,5 +100,38 @@ describe('stratified', () => {
 
   it('is deterministic', () => {
     expect(stratified(rng(2), 8)).toEqual(stratified(rng(2), 8));
+  });
+});
+
+describe('randomSeed', () => {
+  it('returns a usable uint32', () => {
+    for (let i = 0; i < 200; i++) {
+      const s = randomSeed();
+      expect(Number.isInteger(s)).toBe(true);
+      expect(s).toBeGreaterThanOrEqual(0);
+      expect(s).toBeLessThanOrEqual(0xffffffff);
+    }
+  });
+
+  it('varies between calls', () => {
+    const seen = new Set(Array.from({ length: 50 }, () => randomSeed()));
+    expect(seen.size).toBeGreaterThan(45);
+  });
+
+  it('produces seeds the generator accepts', () => {
+    const s = randomSeed();
+    expect(rng(s)()).toBe(rng(s)());
+  });
+
+  it('falls back when crypto is unavailable', () => {
+    const original = globalThis.crypto;
+    // Some embedded runtimes have no WebCrypto; a shuffle button should still
+    // work rather than throwing.
+    Object.defineProperty(globalThis, 'crypto', { value: undefined, configurable: true });
+    try {
+      expect(Number.isInteger(randomSeed())).toBe(true);
+    } finally {
+      Object.defineProperty(globalThis, 'crypto', { value: original, configurable: true });
+    }
   });
 });

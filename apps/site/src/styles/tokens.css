@@ -6,35 +6,19 @@
  */
 
 /* ── Typefaces ──────────────────────────────────────────────────────────
- * Noi Grotesk (display) and Fusion Neue (body) are COMMERCIAL faces whose
- * reuse rights are unconfirmed — see FONTS.md. The @font-face blocks below
- * load them from /fonts, which is gitignored, so a clone without a licence
- * simply falls through to the open stack and the site still reads correctly.
+ * Schibsted Grotesk (display) and Inter (body), both SIL Open Font Licence.
+ *
+ * The design was drawn in Noi Grotesk and Fusion Neue, which came off a
+ * Framer CDN with unconfirmed reuse rights — see FONTS.md. These are the
+ * licensed substitutes. Schibsted is not an arbitrary pick: it is already
+ * the esports pack's own display face, so the site and the product share a
+ * voice.
+ *
+ * The rest are the nine packs' own display faces, needed by the pack pages
+ * and the frame chrome. All open, all from Google Fonts, all in one request
+ * — which is why this is a single @import rather than a <link> per page.
  */
-@font-face {
-  font-family: Noi;
-  src: url('/fonts/noi-grotesk-regular-400.woff2') format('woff2');
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: Noi;
-  src: url('/fonts/noi-grotesk-semibold-600.woff2') format('woff2');
-  font-weight: 600;
-  font-display: swap;
-}
-@font-face {
-  font-family: Fusion;
-  src: url('/fonts/fusion-neue-regular-400.woff2') format('woff2');
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: Fusion;
-  src: url('/fonts/fusion-neue-semibold-600.woff2') format('woff2');
-  font-weight: 600;
-  font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Syne:wght@800&family=Chakra+Petch:wght@700&family=Figtree:wght@800&family=Young+Serif&family=JetBrains+Mono:wght@400;500;800&family=Space+Grotesk:wght@700&family=Manrope:wght@800&family=Instrument+Serif&display=swap');
 
 :root {
   /* ── Colour ───────────────────────────────────────────────────────── */
@@ -53,8 +37,8 @@
   --frame: #b7a5ab;
 
   /* ── Type ─────────────────────────────────────────────────────────── */
-  --display: Noi, 'Schibsted Grotesk', 'Helvetica Neue', system-ui, sans-serif;
-  --body: Fusion, 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+  --display: 'Schibsted Grotesk', 'Helvetica Neue', system-ui, sans-serif;
+  --body: Inter, 'Helvetica Neue', system-ui, sans-serif;
   --annotation: ui-monospace, SFMono-Regular, Consolas, monospace;
 
   /* ── Geometry ─────────────────────────────────────────────────────── */
