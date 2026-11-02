@@ -17,6 +17,7 @@ export default defineConfig({
         packs: page('packs'),
         examples: page('examples'),
         docs: page('docs'),
+        pro: page('pro'),
         roadmap: page('roadmap'),
       },
     },
