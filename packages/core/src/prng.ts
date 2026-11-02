@@ -39,6 +39,29 @@ export function normaliseSeed(seed: number | string | undefined): number {
 export type Rng = () => number;
 
 /**
+ * A fresh random seed.
+ *
+ * Determinism is the point of a seed, so this is the one place randomness is
+ * intended: picking a *new* field, not varying an existing one. Hold the
+ * result in state — calling this during render would give a different layout
+ * every frame and break SSR.
+ *
+ * ```ts
+ * const [seed, setSeed] = useState(1);
+ * <button onClick={() => setSeed(randomSeed())}>Shuffle</button>
+ * ```
+ */
+export function randomSeed(): number {
+  // crypto when it exists, so two tabs opened in the same millisecond do not
+  // land on the same "random" field.
+  const c = globalThis.crypto;
+  if (c && typeof c.getRandomValues === 'function') {
+    return c.getRandomValues(new Uint32Array(1))[0] as number;
+  }
+  return Math.floor(Math.random() * 0xffffffff);
+}
+
+/**
  * sfc32 — 128-bit state, uniform output in [0, 1).
  *
  * The four state words are derived from one seed via cyrb53 so that adjacent
