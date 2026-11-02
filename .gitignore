@@ -22,4 +22,8 @@ planning/
 # Commercial webfonts (Noi Grotesk, Fusion Neue) pulled from a Framer CDN.
 # Rights unconfirmed — see apps/site/FONTS.md. Present locally so the site
 # matches the design; never committed, never deployed, until licensed.
-apps/site/public/fonts/*.woff2
+#
+# The whole directory, not just the binaries: the mockup export's
+# manifest.json listed direct CDN download URLs for the same faces, which
+# is the same problem in text form.
+apps/site/public/fonts/

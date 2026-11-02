@@ -9,13 +9,15 @@ display face, so the site and the product share a voice.
 ## Why not the fonts it was designed in
 
 The design was drawn in **Noi Grotesk** and **Fusion Neue**. Both were pulled
-from a Framer CDN by the tool that produced the mockup, and the export's own
-manifest says:
+from a Framer CDN by the tool that produced the mockup, whose font manifest
+said:
 
 > Commercial reuse rights for Noi Grotesk and Fusion Neue need confirmation.
 
-They were never committed. `.woff2` files under `public/fonts/` are
-gitignored, so nothing unlicensed can ship.
+That sentence is the whole reason this file exists, and it is the only part
+of the manifest worth keeping — so this is now the record. Nothing under
+`public/fonts/` is committed: not the `.woff2` files, and not the manifest,
+which listed direct CDN download URLs for the same unlicensed faces.
 
 **If you licence them later**, swap two lines in `src/styles/tokens.css`:
 
