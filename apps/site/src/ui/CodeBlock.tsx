@@ -11,10 +11,13 @@ export function CodeBlock({
   label,
   code,
   id,
+  copyLabel = 'Copy',
 }: {
   label: string;
   code: string;
   id?: string;
+  /** Button text — "Copy prompt" on the MCP page, "Copy" elsewhere. */
+  copyLabel?: string;
 }): React.ReactElement {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
 
@@ -33,7 +36,11 @@ export function CodeBlock({
       <div className="code-bar">
         <span>{label}</span>
         <button type="button" onClick={copy}>
-          {state === 'copied' ? 'Copied' : state === 'failed' ? 'Select and copy' : 'Copy'}
+          {state === 'copied'
+            ? 'Copied'
+            : state === 'failed'
+              ? 'Select and copy'
+              : copyLabel}
         </button>
       </div>
       <pre>{code}</pre>

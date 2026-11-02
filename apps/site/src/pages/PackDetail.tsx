@@ -1,7 +1,8 @@
 import { FloatingField } from '@usemote/react';
 import { BASE_PACK, type ShapeColors, type ShapeDef } from '@usemote/core';
+import type { CSSProperties } from 'react';
 import { CodeBlock } from '../ui/CodeBlock.js';
-import { packSurface, type PackEntry } from '../lib/packs.js';
+import { packAccent, packSurface, type PackEntry } from '../lib/packs.js';
 
 /** Renders one shape at its real aspect ratio, on the pack's own ground. */
 function ShapeTile({ shape, colors }: { shape: ShapeDef; colors: ShapeColors }) {
@@ -29,10 +30,13 @@ function ShapeTile({ shape, colors }: { shape: ShapeDef; colors: ShapeColors }) 
 export function PackDetail({ entry }: { entry: PackEntry }): React.ReactElement {
   const { pack } = entry;
   const themes = Object.keys(pack.themes ?? {});
-  const stops = pack.themes?.dark ?? [];
   const demo = pack.demo?.a ?? { mode: 'bob', count: 10, size: 80, seed: 4 };
-  // Alternating fill/detail so adjacent tiles do not read as one block.
-  const { bg, ink, palette } = packSurface(entry);
+  // The detail page sits on the same light tint as the pack's directory
+  // card — its signature accent washed into white — with the light theme's
+  // palette, so the whole page reads as one light-style surface.
+  const { ink, palette } = packSurface(entry, 'light');
+  const tint = packAccent(pack);
+  const tinted = { '--tint': tint } as CSSProperties;
 
   const base = (pack.baseShapes ?? [])
     .map((id) => BASE_PACK.shapes.find((s) => s.id === id))
@@ -62,10 +66,10 @@ export function PackDetail({ entry }: { entry: PackEntry }): React.ReactElement 
           </dl>
         </div>
 
-        <div className="pack-hero-stage" style={{ background: bg }}>
+        <div className="pack-hero-stage tinted" style={tinted}>
           <FloatingField
             className="field" packs={[pack]}
-            theme="dark" avoid="center" {...demo}
+            theme="light" avoid="center" {...demo}
           />
           <div className="pack-hero-label" style={{ color: ink }}>
             <strong style={{
@@ -121,7 +125,7 @@ export function PackDetail({ entry }: { entry: PackEntry }): React.ReactElement 
       <section className="pack-section">
         <div className="eyebrow">The shapes</div>
         <h2>All {pack.shapes.length}, at their real proportions.</h2>
-        <ul className="shape-grid" style={{ background: bg }}>
+        <ul className="shape-grid tinted" style={tinted}>
           {pack.shapes.map((s, i) => (
             <ShapeTile key={s.id} shape={s} colors={palette[i % palette.length]!} />
           ))}
@@ -142,7 +146,7 @@ export function PackDetail({ entry }: { entry: PackEntry }): React.ReactElement 
             Mote folds them in automatically — so a field is never only literal
             icons.
           </p>
-          <ul className="shape-grid" style={{ background: bg }}>
+          <ul className="shape-grid tinted" style={tinted}>
             {base.map((s, i) => (
               <ShapeTile key={s.id} shape={s} colors={palette[i % palette.length]!} />
             ))}

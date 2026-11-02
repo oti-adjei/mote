@@ -9,6 +9,7 @@ export const ROUTES: Route[] = [
   { href: '/playground.html', label: 'Playground', page: 'playground' },
   { href: '/packs.html', label: 'Packs', page: 'packs' },
   { href: '/examples.html', label: 'Examples', page: 'examples' },
+  { href: '/mcp.html', label: 'MCP', page: 'mcp' },
   { href: '/docs.html', label: 'Docs', page: 'docs' },
   { href: '/pro.html', label: 'Pro', page: 'pro' },
 ];
