@@ -7,7 +7,7 @@
  * configurations — is read off the actual `ShapePack`, so the site cannot
  * drift from the library.
  */
-import { BASE_PACK, type ShapePack } from '@usemote/core';
+import { BASE_PACK, type ShapeColors, type ShapePack } from '@usemote/core';
 import { esports } from '@usemote/pack-esports';
 import { space } from '@usemote/pack-space';
 import { cyber } from '@usemote/pack-cyber';
@@ -74,13 +74,31 @@ export const ALL_PACKS: Record<string, ShapePack> = {
 export const TOTAL_SHAPES =
   PACKS.reduce((n, p) => n + p.pack.shapes.length, 0) + BASE_PACK.shapes.length;
 
-/** Stage colours a pack declares, falling back to the site's own surfaces. */
-export function packSurface(entry: PackEntry, theme = 'dark'): {
+/**
+ * Everything a page needs to render a pack on its own ground.
+ *
+ * Packs declare `background`, `ink` and `themes`; not every pack declares
+ * every theme. One helper rather than a fallback repeated at each call site,
+ * so a pack that omits something degrades the same way everywhere.
+ */
+export interface PackSurface {
   bg: string;
   ink: string;
-} {
+  /** Representative fill/detail pairs, for shape tiles and frame chrome. */
+  palette: ShapeColors[];
+}
+
+const FALLBACK_BG = '#121212';
+const FALLBACK_INK = '#f2f2ee';
+
+export function packSurface(entry: PackEntry, theme = 'dark'): PackSurface {
+  const stops = entry.pack.themes?.[theme] ?? entry.pack.themes?.dark ?? [];
+  const all = stops.map((s) => s.f);
   return {
-    bg: entry.pack.background?.[theme] ?? 'var(--stone)',
-    ink: entry.pack.ink?.[theme] ?? 'var(--ink)',
+    bg: entry.pack.background?.[theme] ?? FALLBACK_BG,
+    ink: entry.pack.ink?.[theme] ?? FALLBACK_INK,
+    palette: stops.length
+      ? stops.slice(0, 2).map((s) => ({ f: s.f, d: s.d, p: all }))
+      : [{ f: FALLBACK_INK, d: FALLBACK_BG }],
   };
 }
