@@ -382,14 +382,34 @@ details[open] > summary::before { content: '–'; background: var(--blush); }
 .principle h3 { font-size: 22px; margin-bottom: 12px; }
 .principle p { color: var(--muted); }
 
+/* ── How a commissioned pack works ─────────────────────────────────── */
+.process {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+.process-step {
+  border-top: 1px solid var(--ink);
+  padding-top: 20px;
+  min-width: 0;
+}
+.process-step .pack-number { color: var(--muted); }
+.process-step h3 { font-size: 20px; margin: 16px 0 12px; }
+.process-step p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+
 @media (max-width: 1024px) {
   .pro-pack-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .process { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
 }
 @media (max-width: 767px) {
   .tier-pair { grid-template-columns: 1fr; }
   .tier { padding: 28px; }
   .tier-price { font-size: 44px; }
   .pro-pack-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .process { grid-template-columns: 1fr; gap: 28px; }
 }
 
 /* ══════════════════════════════════════════════════════════════════════

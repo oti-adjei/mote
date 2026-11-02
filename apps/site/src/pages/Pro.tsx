@@ -1,49 +1,49 @@
 import { FloatingField } from '@usemote/react';
 import { Layout } from '../shell/Layout.js';
 import { PACKS, TOTAL_SHAPES, packSurface } from '../lib/packs.js';
-import { PRINCIPLES, QUESTIONS, TIERS } from '../lib/pro.js';
+import { CONTACT, PRINCIPLES, PROCESS, QUESTIONS, SCOPE } from '../lib/pro.js';
 
 export function Pro(): React.ReactElement {
   return (
-    <Layout page="pro" title="Pro">
+    <Layout page="pro" title="Custom packs">
       <section className="page-intro wrap">
-        <div className="eyebrow">A proposal, not a product</div>
-        <h1>The code is free.<br />The drawings might not be.</h1>
+        <div className="eyebrow">Free, permanently</div>
+        <h1>All of it is free.<br />Drawings are the<br />part that cost.</h1>
         <p className="lead">
-          Mote's engine is MIT and always will be. The open question is whether
-          the nine shape packs — the part that is illustration work rather than
-          code — eventually sit behind a one-off payment.
+          Everything in the repository is MIT and stays that way — the engine,
+          all nine packs, {TOTAL_SHAPES} shapes, the render API. There is no
+          tier above it. The one thing you can pay for is a pack that does not
+          exist yet: yours, in your own brand.
         </p>
         <p className="notice" style={{ marginTop: 24 }}>
-          <strong>Nothing here is live.</strong> No package is published, there
-          is no checkout, and no price has been set. This page exists so the
-          idea can be judged before it is built.
+          <strong>No tiers, no licence keys, no checkout.</strong> Nothing on
+          this page unlocks anything, because nothing is locked.
         </p>
       </section>
 
-      {/* ── Tiers ─────────────────────────────────────────────────── */}
+      {/* ── Free versus drawn ─────────────────────────────────────── */}
       <div className="wrap">
         <div className="tier-pair">
-          {TIERS.map((tier) => (
-            <article key={tier.name} className={`tier${tier.featured ? ' featured' : ''}`}>
+          {SCOPE.map((card) => (
+            <article key={card.name} className={`tier${card.featured ? ' featured' : ''}`}>
               <header>
-                <span className="pack-number">{tier.name.toUpperCase()}</span>
+                <span className="pack-number">{card.name.toUpperCase()}</span>
                 <p className="tier-price">
-                  {tier.price}
-                  <span>{tier.priceNote}</span>
+                  {card.heading}
+                  <span>{card.note}</span>
                 </p>
-                <p className="tier-summary">{tier.summary}</p>
+                <p className="tier-summary">{card.summary}</p>
               </header>
               <ul className="tier-list">
-                {tier.includes.map((line) => (
+                {card.includes.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
               </ul>
               <a
-                className={`btn ${tier.featured ? 'primary' : 'quiet'}`}
-                href={tier.cta.href}
+                className={`btn ${card.featured ? 'primary' : 'quiet'}`}
+                href={card.cta.href}
               >
-                {tier.cta.label}
+                {card.cta.label}
                 <span className="arrow" aria-hidden="true">↗</span>
               </a>
             </article>
@@ -51,22 +51,23 @@ export function Pro(): React.ReactElement {
         </div>
       </div>
 
-      {/* ── What Pro would contain ────────────────────────────────── */}
+      {/* ── What a pack is ────────────────────────────────────────── */}
       <section className="section wrap">
         <div className="section-heading">
           <div>
-            <div className="eyebrow">What it would be</div>
-            <h2>Eight worlds.<br />121 drawings.</h2>
+            <div className="eyebrow">The reference</div>
+            <h2>Nine of these<br />already exist.</h2>
           </div>
           <p className="lead">
-            Esports stays open, so the free tier is a complete product rather
-            than a teaser. These are the eight that would move — {TOTAL_SHAPES}{' '}
-            shapes in total across the library.
+            Each one is around fifteen drawings, a palette as named themes, a
+            display typeface and a curated set of primitives. A commissioned
+            pack is this, for your product — and all nine of these stay free
+            whether anyone commissions anything or not.
           </p>
         </div>
 
         <div className="pro-pack-grid">
-          {PACKS.filter((p) => p.id !== 'esports').map((p) => {
+          {PACKS.map((p) => {
             const surface = packSurface(p);
             return (
               <a key={p.id} className="pro-pack" href={`/packs.html?pack=${p.id}`}>
@@ -87,15 +88,39 @@ export function Pro(): React.ReactElement {
         </div>
       </section>
 
+      {/* ── How a commission works ────────────────────────────────── */}
+      <section className="section wrap">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">How it works</div>
+            <h2>Four steps,<br />no funnel.</h2>
+          </div>
+          <p className="lead">
+            A quote comes before any drawing, so the decision is made with a
+            real number rather than a published guess.
+          </p>
+        </div>
+        <ol className="process">
+          {PROCESS.map((item) => (
+            <li key={item.step} className="process-step">
+              <span className="pack-number">{item.step}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* ── Principles ────────────────────────────────────────────── */}
       <section className="section wrap">
         <div className="section-heading">
           <div>
-            <div className="eyebrow">If it happens</div>
-            <h2>The rules it<br />would follow.</h2>
+            <div className="eyebrow">The rules</div>
+            <h2>Written down,<br />so they stick.</h2>
           </div>
           <p className="lead">
-            Written down first, so they are harder to quietly abandon later.
+            These are commitments about what will never be taken away, which
+            is the only kind worth publishing.
           </p>
         </div>
         <div className="grid two">
@@ -127,11 +152,11 @@ export function Pro(): React.ReactElement {
 
         <div className="callout" style={{ marginTop: 48 }}>
           <div>
-            <div className="eyebrow">Have a view?</div>
-            <h2>Tell me before it ships.</h2>
+            <div className="eyebrow">Want a pack in your own brand?</div>
+            <h2>Get in touch.</h2>
           </div>
-          <a className="btn primary" href="/roadmap.html">
-            See the roadmap<span className="arrow" aria-hidden="true">↗</span>
+          <a className="btn primary" href={CONTACT.href}>
+            {CONTACT.label}<span className="arrow" aria-hidden="true">↗</span>
           </a>
         </div>
       </section>
