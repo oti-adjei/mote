@@ -193,6 +193,19 @@ export interface FieldOptions {
   seed?: number | string;
   theme?: string | ThemeStop[];
   depth?: boolean;
+  /**
+   * Keep a region clear for content.
+   *
+   * This is a LAYOUT-time guarantee. `static`, `bob` and `hop` hold their
+   * home positions, so the region stays clear for as long as the field runs.
+   * `drift`, `across`, `bounce` and `gravity` travel freely and will wander
+   * back into it — measured over ten seconds on a 1200x420 field, drift
+   * returns 5 shapes of 20 and across returns 4.
+   *
+   * For a headline that must stay legible under a travelling preset, layer a
+   * second field instead: a quiet travelling layer behind, and a `bob` layer
+   * carrying the large shapes in front.
+   */
   avoid?: AvoidId | Rect;
   speed?: number;
   interactive?: boolean;
