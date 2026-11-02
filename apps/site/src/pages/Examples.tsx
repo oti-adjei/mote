@@ -3,7 +3,8 @@ import { BASE_PACK, type MotionId } from '@usemote/core';
 import { windowShape } from '@usemote/media';
 import { useState } from 'react';
 import { Layout } from '../shell/Layout.js';
-import { PACKS } from '../lib/packs.js';
+import { PACKS, packSurface } from '../lib/packs.js';
+import { SITE_DARK } from '../lib/theme.js';
 import { MediaStudies } from './MediaStudies.js';
 
 interface Study {
@@ -92,7 +93,7 @@ export function Examples(): React.ReactElement {
           {shown.map((s) => {
             const entry = s.pack ? PACKS.find((p) => p.id === s.pack) : undefined;
             const pack = entry?.pack ?? BASE_PACK;
-            const bg = entry?.pack.background?.dark ?? 'var(--blush)';
+            const bg = entry ? packSurface(entry).bg : 'var(--blush)';
             return (
               <article key={s.mode} className="sample" data-example-mode={s.mode}>
                 <div className="sample-art" style={{ background: bg }}>
@@ -131,10 +132,10 @@ export function Examples(): React.ReactElement {
             stay in phase and the cost does not double.
           </p>
         </div>
-        <div className="sample-art" style={{ height: 420, background: '#121212' }}>
+        <div className="sample-art" style={{ height: 420, background: 'var(--plum)' }}>
           <FloatingField
             className="field" packs={[BASE_PACK]}
-            mode="drift" set="geo" theme="mono"
+            mode="drift" set="geo" theme={SITE_DARK}
             count={34} size={38} seed={2} depth speed={0.7}
           />
           <FloatingField
@@ -143,7 +144,7 @@ export function Examples(): React.ReactElement {
             theme="dark" count={5} size={92} seed={8} avoid="center"
           />
           <div className="stage-caption">
-            <strong style={{ color: '#f2f2ee' }}>Quiet behind. Expressive in front.</strong>
+            <strong style={{ color: 'var(--paper)' }}>Quiet behind. Expressive in front.</strong>
             <span>drift · mono + bob · objects</span>
           </div>
         </div>

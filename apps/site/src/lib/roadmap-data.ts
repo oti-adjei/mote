@@ -140,12 +140,27 @@ export const ROADMAP: RoadmapGroup[] = [
   {
     stage: 'considering',
     label: 'Considering',
-    note: 'Not committed. Listed so the shape of the thinking is visible.',
+    note:
+      'Not committed, and not in order. Listed so the shape of the thinking is visible — and so the gaps are legible rather than hidden.',
     items: [
       {
         title: 'More packs',
         body:
           'saas-dashboard, seasonal, travel, food, legal. Each is real illustration work, so the next one should be chosen by demand rather than guessed at.',
+      },
+      {
+        title: 'React Native',
+        body:
+          'The engine is plain data and SVG strings, so the layout, the seeds and every motion preset carry over unchanged. What has to be rebuilt is the renderer — React Native has no DOM, so particles become Animated views over react-native-svg.',
+        caveat:
+          'The string renderer and the frame kinds are HTML, so media and window frames would not come along initially.',
+      },
+      {
+        title: 'Flutter',
+        body:
+          'The same split again: a port of the PRNG and the layout solver into Dart, drawing through CustomPainter. Navii does this, and the determinism contract is what makes it tractable — the maths is small and deliberately portable.',
+        caveat:
+          'A second implementation of the layout solver is a second place for the determinism contract to drift. It would need the frame-0 snapshots shared across both languages, as a fixture.',
       },
       {
         title: 'A canvas renderer',

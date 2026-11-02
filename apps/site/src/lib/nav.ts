@@ -10,6 +10,7 @@ export const ROUTES: Route[] = [
   { href: '/packs.html', label: 'Packs', page: 'packs' },
   { href: '/examples.html', label: 'Examples', page: 'examples' },
   { href: '/docs.html', label: 'Docs', page: 'docs' },
+  { href: '/pro.html', label: 'Pro', page: 'pro' },
 ];
 
 export const REPO = 'https://github.com/oti-adjei/mote';

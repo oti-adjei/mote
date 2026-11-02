@@ -10,6 +10,11 @@ const SECTIONS = [
   ['frames', 'Frames are content, too.'],
   ['motion', 'Motion should know when to stop.'],
   ['authoring', 'Writing your own pack'],
+  ['custom-motion', 'Writing your own motion'],
+  ['determinism', 'Seeds and determinism'],
+  ['recipes', 'Recipes'],
+  ['sdk', 'Every way to install it'],
+  ['troubleshooting', 'When it looks wrong'],
 ] as const;
 
 const PROPS: Array<[string, string, string]> = [
@@ -242,6 +247,282 @@ export const myPack: ShapePack = {
               <code className="inline-code">validatePack(pack)</code> checks all
               of it.
             </p>
+          </section>
+
+          <section className="doc-section" id="custom-motion">
+            <h2>Writing your own motion.</h2>
+            <p>
+              <code className="inline-code">mode</code> accepts a preset object
+              as well as a name. A preset is two functions: one that seeds a
+              particle, and one that moves it.
+            </p>
+            <CodeBlock
+              id="doc-motion" label="A custom preset"
+              code={`import type { MotionPreset } from '@usemote/core';
+
+const sink: MotionPreset = {
+  id: 'sink',
+  init: (p, _ctx, rand) => { p.state.rate = 10 + rand() * 20; },
+  step: (p, ctx, dt) => {
+    p.y += (p.state.rate ?? 10) * dt;
+    if (p.y - p.h > ctx.height) p.y = -p.h;
+  },
+};
+
+<FloatingField mode={sink} count={20} />`}
+            />
+            <h3>Three rules</h3>
+            <p>
+              Write <code className="inline-code">transform</code> and{' '}
+              <code className="inline-code">opacity</code> only — anything that
+              triggers layout will cost you the frame budget.
+            </p>
+            <p>
+              Use <code className="inline-code">p.phase</code>. It is a seeded
+              value between 0 and 1, spread evenly across the field, and it is
+              what stops every shape moving in lockstep. A field without it
+              reads as a chorus line.
+            </p>
+            <p>
+              <strong>Frame 0 must be visible.</strong> It is what the server
+              renders and what a reduced-motion visitor sees, and for them no
+              step ever runs. A preset that parks its particles off-screen at
+              init shows those people an empty background. The built-in{' '}
+              <code className="inline-code">gravity</code> preset shipped with
+              exactly that bug once.
+            </p>
+            <p>
+              Memoise the object, or the field rebuilds on every render.
+            </p>
+          </section>
+
+          <section className="doc-section" id="determinism">
+            <h2>Seeds and determinism.</h2>
+            <p>
+              The same seed produces the same layout — the same shapes, in the
+              same places, at the same sizes — byte for byte, forever. That is
+              what lets a field render on the server and hydrate without a
+              mismatch, and what makes a screenshot reproducible.
+            </p>
+            <h3>Use a stable seed</h3>
+            <p>
+              A user id, a slug, a page name. Anything that does not change
+              between renders.
+            </p>
+            <CodeBlock
+              id="doc-seed" label="Stable"
+              code={`<FloatingField seed={post.slug} />        // same post, same field
+<FloatingField seed="pricing-hero" />    // same page, same field`}
+            />
+            <p>
+              Do <strong>not</strong> call{' '}
+              <code className="inline-code">Math.random()</code> in render. The
+              field would differ between the server and the client, and change
+              on every re-render.
+            </p>
+            <h3>When you do want a new one</h3>
+            <p>
+              <code className="inline-code">randomSeed()</code> is for picking
+              a different field, not for varying an existing one. Hold the
+              result in state.
+            </p>
+            <CodeBlock
+              id="doc-random" label="Shuffling"
+              code={`import { randomSeed } from '@usemote/core';
+
+const [seed, setSeed] = useState(1);
+
+<FloatingField seed={seed} />
+<button onClick={() => setSeed(randomSeed())}>Shuffle</button>`}
+            />
+            <h3>What a version bump can change</h3>
+            <p>
+              Adding a shape to a pack is a minor version and leaves existing
+              seeds alone. Reordering or removing one changes every layout
+              that has ever used that pack, so it is a major version. The
+              frame-0 snapshots in the repository are that promise, and CI
+              fails if they move.
+            </p>
+          </section>
+
+          <section className="doc-section" id="recipes">
+            <h2>Recipes.</h2>
+            <h3>A hero that keeps its headline legible</h3>
+            <p>
+              <code className="inline-code">avoid</code> is a layout-time
+              guarantee. <code className="inline-code">static</code>,{' '}
+              <code className="inline-code">bob</code> and{' '}
+              <code className="inline-code">hop</code> hold their positions, so
+              the region stays clear. The travelling presets —{' '}
+              <code className="inline-code">drift</code>,{' '}
+              <code className="inline-code">across</code>,{' '}
+              <code className="inline-code">bounce</code>,{' '}
+              <code className="inline-code">gravity</code> — wander back into
+              it as they move.
+            </p>
+            <CodeBlock
+              id="doc-hero" label="Hero"
+              code={`<FloatingField mode="bob" set="geo" count={18} avoid="center" depth />`}
+            />
+            <h3>A quiet background behind body text</h3>
+            <CodeBlock
+              id="doc-quiet" label="Quiet"
+              code={`<FloatingField mode="drift" set="geo" count={14} size={40}
+                speed={0.5} depth />`}
+            />
+            <h3>Depth, with a travelling layer</h3>
+            <p>
+              Two fields. The travelling one stays small and distant; the one
+              carrying the large shapes uses a preset that respects{' '}
+              <code className="inline-code">avoid</code>.
+            </p>
+            <CodeBlock
+              id="doc-depth" label="Layered"
+              code={`<FloatingField mode="drift" set="geo" theme="mono" count={34}
+                size={38} depth speed={0.7} />
+<FloatingField packs={[esports]} mode="bob" count={5} size={92}
+                avoid="center" />`}
+            />
+            <h3>An empty state</h3>
+            <CodeBlock
+              id="doc-empty" label="Empty state"
+              code={`<FloatingField mode="static" count={8} size={44} speed={0} />`}
+            />
+          </section>
+
+          <section className="doc-section" id="sdk">
+            <h2>Every way to install it.</h2>
+            <p>
+              One engine, five ways in. They all render the same field from the
+              same seed.
+            </p>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>If you use</th><th>Install</th><th>Import</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>React, Next</td>
+                    <td><code>@usemote/core @usemote/react</code></td>
+                    <td><code>{'{ FloatingField }'}</code></td>
+                  </tr>
+                  <tr>
+                    <td>Vue, Nuxt</td>
+                    <td><code>@usemote/core @usemote/vue</code></td>
+                    <td><code>{'{ FloatingField }'}</code></td>
+                  </tr>
+                  <tr>
+                    <td>Svelte, SvelteKit</td>
+                    <td><code>@usemote/core @usemote/svelte</code></td>
+                    <td><code>{'use:floatingField'}</code></td>
+                  </tr>
+                  <tr>
+                    <td>Plain HTML, Astro, Webflow</td>
+                    <td><code>script tag</code></td>
+                    <td><code>{'<floating-field>'}</code></td>
+                  </tr>
+                  <tr>
+                    <td>Anything else</td>
+                    <td><code>@usemote/core</code></td>
+                    <td><code>createField(el, opts)</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>No build step at all</h3>
+            <CodeBlock
+              id="doc-cdn" label="Web component"
+              code={`<script src="https://cdn.jsdelivr.net/npm/@usemote/web-component"></script>
+
+<section style="position:relative;overflow:hidden">
+  <floating-field pack="esports" mode="bob" count="10" avoid="center" depth>
+  </floating-field>
+  <h1 style="position:relative">Your headline</h1>
+</section>`}
+            />
+            <h3>Vendored source you own</h3>
+            <p>
+              The shadcn registry copies the component into your project
+              instead of adding a dependency, so you can edit the motion.
+            </p>
+            <CodeBlock
+              id="doc-shadcn" label="shadcn"
+              code={`pnpm dlx shadcn@latest add oti-adjei/mote/floating-field`}
+            />
+            <h3>For coding agents</h3>
+            <p>
+              An MCP server exposes the pack catalogue, the presets and a
+              snippet generator, so an agent writes a correct field instead of
+              guessing at the API.
+            </p>
+            <CodeBlock
+              id="doc-mcp" label="MCP"
+              code={`{
+  "mcpServers": {
+    "mote": { "command": "npx", "args": ["-y", "@usemote/mcp"] }
+  }
+}`}
+            />
+          </section>
+
+          <section className="doc-section" id="troubleshooting">
+            <h2>When it looks wrong.</h2>
+            <details>
+              <summary>The shapes are covering my content</summary>
+              <p>
+                Give the content <code className="inline-code">position: relative</code>.
+                The field is absolutely positioned, so anything in normal flow
+                sits beneath it regardless of document order.
+              </p>
+            </details>
+            <details>
+              <summary>The field filled the whole page</summary>
+              <p>
+                Its parent has no <code className="inline-code">position</code>,
+                so it escaped to the nearest ancestor that does. Add{' '}
+                <code className="inline-code">position: relative</code> to the
+                section it belongs to.
+              </p>
+            </details>
+            <details>
+              <summary>Shapes drift over my headline</summary>
+              <p>
+                <code className="inline-code">avoid</code> holds at layout time.
+                A travelling preset wanders back in. Use{' '}
+                <code className="inline-code">bob</code>,{' '}
+                <code className="inline-code">static</code> or{' '}
+                <code className="inline-code">hop</code> for the layer that has
+                to keep clear, and put the travelling one behind it.
+              </p>
+            </details>
+            <details>
+              <summary>Nothing moves</summary>
+              <p>
+                Check <code className="inline-code">prefers-reduced-motion</code>.
+                A still field is the correct behaviour there. Also check that{' '}
+                <code className="inline-code">speed</code> is not 0 and the
+                section is actually on screen — offscreen fields stop ticking.
+              </p>
+            </details>
+            <details>
+              <summary>It looks different on the server and the client</summary>
+              <p>
+                Something in the configuration is not stable. A{' '}
+                <code className="inline-code">Math.random()</code> seed, a{' '}
+                <code className="inline-code">Date.now()</code>, or a preset
+                object built inline during render.
+              </p>
+            </details>
+            <details>
+              <summary>The page feels heavy</summary>
+              <p>
+                Lower <code className="inline-code">count</code> before anything
+                else — the cost is node count, not coverage. To fill more space,
+                raise <code className="inline-code">size</code> instead. Above
+                60 shapes you are outside the budget the library is tested at.
+              </p>
+            </details>
           </section>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { FloatingField } from '@usemote/react';
 import { BASE_PACK, type ShapeColors, type ShapeDef } from '@usemote/core';
 import { CodeBlock } from '../ui/CodeBlock.js';
-import type { PackEntry } from '../lib/packs.js';
+import { packSurface, type PackEntry } from '../lib/packs.js';
 
 /** Renders one shape at its real aspect ratio, on the pack's own ground. */
 function ShapeTile({ shape, colors }: { shape: ShapeDef; colors: ShapeColors }) {
@@ -30,14 +30,9 @@ export function PackDetail({ entry }: { entry: PackEntry }): React.ReactElement 
   const { pack } = entry;
   const themes = Object.keys(pack.themes ?? {});
   const stops = pack.themes?.dark ?? [];
-  const bg = pack.background?.dark ?? '#121212';
-  const ink = pack.ink?.dark ?? '#f2f2ee';
   const demo = pack.demo?.a ?? { mode: 'bob', count: 10, size: 80, seed: 4 };
-
-  // Alternate fill/detail so adjacent tiles do not read as one block.
-  const palette: ShapeColors[] = stops.length
-    ? stops.slice(0, 2).map((s) => ({ f: s.f, d: s.d, p: stops.map((x) => x.f) }))
-    : [{ f: ink, d: bg }];
+  // Alternating fill/detail so adjacent tiles do not read as one block.
+  const { bg, ink, palette } = packSurface(entry);
 
   const base = (pack.baseShapes ?? [])
     .map((id) => BASE_PACK.shapes.find((s) => s.id === id))
