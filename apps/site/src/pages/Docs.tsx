@@ -247,6 +247,12 @@ export const myPack: ShapePack = {
               <code className="inline-code">validatePack(pack)</code> checks all
               of it.
             </p>
+            <p>
+              Drawing fifteen shapes is the slow part, and it is design work
+              rather than code. Want a pack in your own brand instead?{' '}
+              <a href="/pro.html">Get in touch</a> — everything already in the
+              library stays free either way.
+            </p>
           </section>
 
           <section className="doc-section" id="custom-motion">
