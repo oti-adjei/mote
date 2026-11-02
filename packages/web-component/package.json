@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "<floating-field> custom element for Mote. Works in plain HTML, Astro, Webflow, Framer — anywhere a script tag runs.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oti-adjei/mote.git",
+    "directory": "packages/web-component"
+  },
+  "homepage": "https://mote.hearvie.dev",
+  "bugs": "https://github.com/oti-adjei/mote/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -10,21 +17,38 @@
   "unpkg": "./dist/mote.global.js",
   "jsdelivr": "./dist/mote.global.js",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./global": "./dist/mote.global.js"
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "size": "size-limit"
   },
-  "size-limit": [{ "path": "dist/mote.global.js", "limit": "14 kB" }],
-  "dependencies": { "@usemote/core": "workspace:^0.1.0" },
+  "size-limit": [
+    {
+      "path": "dist/mote.global.js",
+      "limit": "14 kB"
+    }
+  ],
+  "dependencies": {
+    "@usemote/core": "workspace:^0.1.0"
+  },
   "devDependencies": {
     "@usemote/pack-esports": "workspace:*",
     "happy-dom": "^20.0.0"
   },
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

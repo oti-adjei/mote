@@ -26,10 +26,33 @@ jobs:
       - run: pnpm check
       - run: pnpm size
 
+      # npm reads credentials from .npmrc, NOT from NODE_AUTH_TOKEN. That
+      # variable only works because actions/setup-node writes an .npmrc
+      # pointing at it — and this workflow uses mise, not setup-node. Without
+      # this step every publish below fails with ENEEDAUTH.
+      #
+      # Runs on dry runs too, so a dry run actually proves the credential
+      # works instead of only proving the loop logic does.
+      - name: Authenticate to npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN secret is not set"
+            exit 1
+          fi
+          npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          echo "authenticated as $(npm whoami)"
+
       - name: Publish changed packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           DRY: ${{ inputs.dry-run }}
+          # Provenance requires a PUBLIC repository whose URL matches the
+          # package's own repository field. mote is deliberately private, so
+          # passing --provenance today fails the publish outright. This flips
+          # itself on the day the repo goes public — no edit needed.
+          PROVENANCE: ${{ github.event.repository.visibility == 'public' && '--provenance' || '' }}
         run: |
           set -euo pipefail
           for dir in packages/*/; do
@@ -49,6 +72,6 @@ jobs:
               echo "would publish $name@$version"
             else
               echo "publishing $name@$version"
-              (cd "$dir" && npm publish --provenance --access public)
+              (cd "$dir" && npm publish $PROVENANCE --access public)
             fi
           done

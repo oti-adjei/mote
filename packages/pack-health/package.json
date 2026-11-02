@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "Health & MedTech shape pack for Mote — 15 shapes and four themes.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oti-adjei/mote.git",
+    "directory": "packages/pack-health"
+  },
+  "homepage": "https://mote.hearvie.dev",
+  "bugs": "https://github.com/oti-adjei/mote/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

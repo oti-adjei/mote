@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "Deterministic floating-shape background fields. Zero dependencies, SSR-safe, reduced-motion aware.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oti-adjei/mote.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://mote.hearvie.dev",
+  "bugs": "https://github.com/oti-adjei/mote/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

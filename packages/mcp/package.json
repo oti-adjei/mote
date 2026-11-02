@@ -1,8 +1,15 @@
 {
   "name": "@usemote/mcp",
   "version": "0.1.0",
-  "description": "MCP server for Mote \u2014 lets coding agents discover shapes, packs and presets, and generate correct snippets.",
+  "description": "MCP server for Mote — lets coding agents discover shapes, packs and presets, and generate correct snippets.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oti-adjei/mote.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://mote.hearvie.dev",
+  "bugs": "https://github.com/oti-adjei/mote/issues",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
