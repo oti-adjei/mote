@@ -3,14 +3,29 @@
   "version": "0.1.0",
   "description": "Svelte action for Mote — deterministic floating-shape background fields.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oti-adjei/mote.git",
+    "directory": "packages/svelte"
+  },
+  "homepage": "https://mote.hearvie.dev",
+  "bugs": "https://github.com/oti-adjei/mote/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
@@ -18,15 +33,26 @@
     "test": "vitest run",
     "size": "size-limit"
   },
-  "size-limit": [{ "path": "dist/index.js", "limit": "2 kB" }],
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "2 kB"
+    }
+  ],
   "peerDependencies": {
     "@usemote/core": "workspace:^0.1.0",
     "svelte": ">=4"
   },
-  "peerDependenciesMeta": { "svelte": { "optional": true } },
+  "peerDependenciesMeta": {
+    "svelte": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@usemote/core": "workspace:*",
     "happy-dom": "^20.0.0"
   },
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

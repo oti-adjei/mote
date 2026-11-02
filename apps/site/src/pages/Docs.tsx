@@ -10,6 +10,7 @@ const SECTIONS = [
   ['frames', 'Frames are content, too.'],
   ['motion', 'Motion should know when to stop.'],
   ['authoring', 'Writing your own pack'],
+  ['walkthrough', 'A pack, end to end'],
   ['custom-motion', 'Writing your own motion'],
   ['determinism', 'Seeds and determinism'],
   ['recipes', 'Recipes'],
@@ -252,6 +253,252 @@ export const myPack: ShapePack = {
               rather than code. Want a pack in your own brand instead?{' '}
               <a href="/pro.html">Get in touch</a> — everything already in the
               library stays free either way.
+            </p>
+          </section>
+
+          <section className="doc-section" id="walkthrough">
+            <h2>A pack, end to end.</h2>
+            <p>
+              The section above is the shape of it. This is the whole journey —
+              empty folder to published package — written from how the nine
+              packs in this repository are actually built.
+            </p>
+            <p>
+              A pack is <strong>its own npm package</strong>. Mote never learns
+              about it, there is no registry to join and nothing to submit. If
+              it imports types from{' '}
+              <code className="inline-code">@usemote/core</code> and passes{' '}
+              <code className="inline-code">validatePack()</code>, it works.
+            </p>
+
+            <h3>1 · The manifest</h3>
+            <p>
+              Core is a <strong>peer</strong> dependency, not a dependency.
+              Two copies of the engine on one page means two schedulers and two
+              PRNGs, which breaks determinism in the least obvious way
+              possible.
+            </p>
+            <CodeBlock
+              id="doc-wt-manifest" label="package.json"
+              code={`{
+  "name": "@you/mote-pack-coffee",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "peerDependencies": { "@usemote/core": "^0.1.0" },
+  "publishConfig": { "access": "public" }
+}`}
+            />
+            <p>
+              <code className="inline-code">sideEffects: false</code> is what
+              lets a bundler drop the shapes a consumer never names. Without
+              it, importing one shape pulls in all fifteen.
+            </p>
+
+            <h3>2 · One shape</h3>
+            <p>
+              A shape is five fields and a function. The function gets colours
+              and returns a complete, self-contained{' '}
+              <code className="inline-code">&lt;svg&gt;</code> string.
+            </p>
+            <CodeBlock
+              id="doc-wt-shape" label="src/index.ts"
+              code={`import type { ShapeColors, ShapeDef, ShapePack } from '@usemote/core';
+
+// Every pack in this repo opens with this helper. It is the only place the
+// root <svg> is written, so the rules below cannot be broken per-shape.
+const S = (viewBox: string, body: string): string =>
+  \`<svg viewBox="\${viewBox}" xmlns="http://www.w3.org/2000/svg" \` +
+  \`style="display:block;width:100%;height:100%;overflow:visible">\${body}</svg>\`;
+
+/** APPEND-ONLY. Reordering or removing changes every existing seed. */
+export const COFFEE_SHAPES: ShapeDef[] = [
+  {
+    id: 'cup',          // stable forever — it is part of the public API
+    label: 'Cup',       // shown in the playground
+    kind: 'obj',        // 'obj' = a drawn thing, 'geo' = a primitive
+    ar: 0.9,            // width ÷ height of the viewBox, declared honestly
+    scale: 1.1,         // optional nudge when a shape reads small
+    render: (c: ShapeColors) => S('0 0 90 100', \`
+      <path d="M12 28h58v34a29 29 0 0 1-58 0Z" fill="\${c.f}"/>
+      <path d="M70 36h10a12 12 0 0 1 0 24H70" fill="none"
+            stroke="\${c.d}" stroke-width="6"/>\`),
+  },
+];`}
+            />
+            <p>
+              <code className="inline-code">c.f</code> is the fill,{' '}
+              <code className="inline-code">c.d</code> the detail, and{' '}
+              <code className="inline-code">c.p</code> the full palette when a
+              shape wants more than two. Use them for every colour — a
+              hardcoded hex survives a theme switch and looks like a bug.
+            </p>
+
+            <h3>3 · What the validator actually checks</h3>
+            <p>
+              <code className="inline-code">validatePack()</code> returns an
+              array of issues, each with a severity. An empty array is a pass.
+              Errors break the field; warnings only make it look wrong.
+            </p>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Severity</th><th>Checked</th><th>Why</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>error</td>
+                    <td>No <code>id=</code> attribute anywhere in the markup</td>
+                    <td>A shape is inlined many times over. Duplicate ids make
+                      every reference resolve to the first copy.</td>
+                  </tr>
+                  <tr>
+                    <td>error</td>
+                    <td>No <code>&lt;style&gt;</code></td>
+                    <td>CSS inside an inlined SVG leaks to the whole page.</td>
+                  </tr>
+                  <tr>
+                    <td>error</td>
+                    <td>No external <code>href</code></td>
+                    <td>A shape must render offline, inside a string renderer,
+                      with no network.</td>
+                  </tr>
+                  <tr>
+                    <td>error</td>
+                    <td><code>viewBox</code> present; <code>render()</code> does
+                      not throw</td>
+                    <td>Both are called once per shape at validation time.</td>
+                  </tr>
+                  <tr>
+                    <td>error</td>
+                    <td>Unique <code>id</code>, <code>kind</code> is geo or obj,
+                      positive <code>ar</code></td>
+                    <td>Layout divides by the aspect ratio.</td>
+                  </tr>
+                  <tr>
+                    <td>error</td>
+                    <td>Every theme has at least one stop with weight{' '}
+                      <code>&gt; 0</code></td>
+                    <td>Zero total weight means no colour can ever be picked.</td>
+                  </tr>
+                  <tr>
+                    <td>warning</td>
+                    <td>No fixed <code>width</code>/<code>height</code> on the
+                      <em> root</em> <code>&lt;svg&gt;</code></td>
+                    <td>Size comes from the field. Inner elements may carry
+                      them — a <code>&lt;rect&gt;</code> must.</td>
+                  </tr>
+                  <tr>
+                    <td>warning</td>
+                    <td>No hardcoded hex colours</td>
+                    <td>They ignore themes. This is the most common mistake.</td>
+                  </tr>
+                  <tr>
+                    <td>warning</td>
+                    <td><code>label</code> is non-empty</td>
+                    <td>The playground renders blank chips without it.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>4 · Themes</h3>
+            <p>
+              A theme is a weighted list of colour stops. Weight is how often a
+              stop gets picked, so a palette can be mostly one colour with
+              occasional accents — which is what stops a field looking like a
+              test card.
+            </p>
+            <CodeBlock
+              id="doc-wt-theme" label="Weighted stops"
+              code={`themes: {
+  dark:  [{ f: '#d9a06b', d: '#241309', w: 6 },   // picked 6 times as often
+          { f: '#8c5a33', d: '#f6ece2', w: 1 }],
+  light: [{ f: '#8c5a33', d: '#fdf6ef', w: 4 },
+          { f: '#d9a06b', d: '#241309', w: 2 }],
+}`}
+            />
+
+            <h3>5 · The metadata the site reads</h3>
+            <p>
+              Optional, and worth filling in — these are what make a pack look
+              like a product rather than a bag of SVGs.
+            </p>
+            <div className="table-wrap">
+              <table>
+                <thead><tr><th>Key</th><th>What it does</th></tr></thead>
+                <tbody>
+                  <tr><td>swatches</td><td>Palette chips, in your intended order. The first vivid one becomes the pack's card tint.</td></tr>
+                  <tr><td>baseShapes</td><td>Which of the 13 primitives to mix in. Without it, <code>set="mixed"</code> gives only your objects and the field reads as all-literal-icons.</td></tr>
+                  <tr><td>background / ink</td><td>Per-theme page colours, so a demo can sit on the pack's own ground.</td></tr>
+                  <tr><td>font</td><td>The display face the pack was drawn against.</td></tr>
+                  <tr><td>demo</td><td>Two configs — <code>a</code> and <code>b</code> — used as the pack's own preview.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>6 · Pin the order, or break every seed</h3>
+            <p>
+              This is the one rule with no warning attached, because no
+              validator can catch it. A seed picks shapes <em>by index</em>. If
+              you insert a shape at position three, every field anyone has ever
+              generated from your pack silently changes.
+            </p>
+            <p>
+              So add to the end, never reorder, never remove — and pin it in a
+              test, which is how the nine packs here protect themselves:
+            </p>
+            <CodeBlock
+              id="doc-wt-test" label="test/pack.test.ts"
+              code={`import { describe, expect, it } from 'vitest';
+import { renderFieldSVG, validatePack } from '@usemote/core';
+import { coffee, COFFEE_SHAPES } from '../src/index.js';
+
+it('passes the authoring rules', () => {
+  expect(validatePack(coffee)).toEqual([]);
+});
+
+it('pins shape order, which is the seed-stability contract', () => {
+  expect(COFFEE_SHAPES.map((s) => s.id)).toEqual(['cup', 'bean', 'kettle']);
+});
+
+it('threads both theme colours through every shape', () => {
+  for (const s of COFFEE_SHAPES) {
+    const markup = s.render({ f: '#AAA111', d: '#BBB222' });
+    expect(markup, s.id).toContain('#AAA111');
+  }
+});
+
+// Frame 0 is what SSR and reduced-motion users get. Snapshot it.
+it('renders a stable frame 0', () => {
+  expect(renderFieldSVG({ packs: [coffee], seed: 7, count: 12 })).toMatchSnapshot();
+});`}
+            />
+            <p>
+              That last test is the valuable one. It fails the build if a
+              drawing changes by a single coordinate, which is what turns
+              "the same seed gives the same field" into something you can
+              actually rely on.
+            </p>
+
+            <h3>7 · Publish</h3>
+            <p>
+              Build, run the tests, then <code className="inline-code">npm
+              publish</code>. Nothing else. Consumers pass it straight to{' '}
+              <code className="inline-code">packs</code>:
+            </p>
+            <CodeBlock
+              id="doc-wt-use" label="Someone else using it"
+              code={`import { FloatingField } from '@usemote/react';
+import { coffee } from '@you/mote-pack-coffee';
+
+<FloatingField packs={[coffee]} mode="drift" theme="dark" count={20} />`}
+            />
+            <p>
+              If you publish one, say so — it is the single thing this project
+              most wants to be true, and it will be linked from the packs page.
             </p>
           </section>
 
