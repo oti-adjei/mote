@@ -17,7 +17,7 @@ export { BASE_PACK, BASE_SHAPES, svgWrap, stroke, SPARK_PATH } from './shapes.js
 export { resolveTheme, pickColors, altColor } from './themes.js';
 export { allShapes, resolvePacks, resolvePool } from './pool.js';
 export { PRESETS, resolvePreset, makeAcross } from './motion/index.js';
-export { cyrb53, normaliseSeed, rng, range, rangeInt, pick, stratified } from './prng.js';
+export { cyrb53, normaliseSeed, randomSeed, rng, range, rangeInt, pick, stratified } from './prng.js';
 export { prefersReducedMotion, isBrowser } from './env.js';
 export { register, activeCount, tickAllForTest } from './scheduler.js';
 export { validatePack } from './validate.js';

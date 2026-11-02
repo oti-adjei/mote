@@ -1,4 +1,5 @@
 import { FloatingField } from '@usemote/react';
+import { randomSeed } from '@usemote/core';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Layout } from '../shell/Layout.js';
 import { CodeBlock } from '../ui/CodeBlock.js';
@@ -171,7 +172,7 @@ export function Playground(): React.ReactElement {
 
             <button
               className="btn quiet small" type="button"
-              onClick={() => set('seed', Math.floor(Math.random() * 100000))}
+              onClick={() => set('seed', randomSeed())}
             >
               Shuffle the seed
             </button>
