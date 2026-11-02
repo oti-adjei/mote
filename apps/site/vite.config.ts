@@ -1,8 +1,26 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+const page = (name: string): string =>
+  new URL(`./${name}.html`, import.meta.url).pathname;
+
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      // One entry per screen, as the design handoff requires: each page is a
+      // real document, not a client-routed view. No SPA fallback needed, and
+      // a visitor only downloads the page they asked for.
+      input: {
+        index: page('index'),
+        playground: page('playground'),
+        packs: page('packs'),
+        examples: page('examples'),
+        docs: page('docs'),
+        roadmap: page('roadmap'),
+      },
+    },
+  },
   resolve: {
     // Point at source, not dist, so the playground hot-reloads when the
     // engine changes. This is also the fastest way to see motion work.

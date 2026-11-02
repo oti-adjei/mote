@@ -1,28 +1,21 @@
 /** Playground state, and the URL encoding that makes a config shareable. */
-import { BASE_PACK, type MotionId, type SetId } from '@usemote/core';
-import { esports } from '@usemote/pack-esports';
-import { space } from '@usemote/pack-space';
-import { cyber } from '@usemote/pack-cyber';
-import { health } from '@usemote/pack-health';
-import { education } from '@usemote/pack-education';
-import { devtools } from '@usemote/pack-devtools';
-import { ai } from '@usemote/pack-ai';
-import { fintech } from '@usemote/pack-fintech';
-import { creative } from '@usemote/pack-creative';
 
-export const PACKS = {
-  base: BASE_PACK,
-  esports,
-  space,
-  cyber,
-  health,
-  education,
-  devtools,
-  ai,
-  fintech,
-  creative,
-} as const;
-export type PackId = keyof typeof PACKS;
+import { BASE_PACK, type MotionId, type SetId, type ShapePack } from '@usemote/core';
+import { ALL_PACKS } from './packs.js';
+
+export const PACKS = ALL_PACKS;
+export type PackId = string;
+
+/**
+ * Pack lookup that always yields a pack.
+ *
+ * `PACKS` is keyed by string, so a bad id from a URL or a stale link resolves
+ * to nothing. A background is never worth failing a page over — fall back to
+ * the base pack, which every install has.
+ */
+export function packFor(id: PackId): ShapePack {
+  return PACKS[id] ?? PACKS.base ?? BASE_PACK;
+}
 
 export const MODES: MotionId[] = ['static', 'bob', 'hop', 'drift', 'across', 'bounce', 'gravity'];
 export const SETS: SetId[] = ['mixed', 'geo', 'objects'];
@@ -36,7 +29,7 @@ export const DIRECTIONS = ['right', 'left', 'up', 'down'] as const;
  * single hardcoded palette.
  */
 export function stageColors(packId: PackId, theme: string): { bg: string; ink: string } {
-  const pack = PACKS[packId];
+  const pack = packFor(packId);
   return {
     bg: pack.background?.[theme] ?? (theme === 'light' ? '#efeee8' : '#121212'),
     ink: pack.ink?.[theme] ?? (theme === 'light' ? '#121212' : '#f2f2ee'),
@@ -149,7 +142,7 @@ export function decode(hash: string): Config {
 /** The props actually handed to <FloatingField />. */
 export function toFieldProps(c: Config) {
   const base = {
-    packs: [PACKS[c.packId]],
+    packs: [packFor(c.packId)],
     mode: c.mode,
     count: c.count,
     size: c.size,
