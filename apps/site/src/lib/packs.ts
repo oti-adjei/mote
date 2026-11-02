@@ -91,6 +91,50 @@ export interface PackSurface {
 const FALLBACK_BG = '#121212';
 const FALLBACK_INK = '#f2f2ee';
 
+/** Saturation and lightness of a hex colour, 0–1. */
+function satLight(hex: string): { s: number; l: number } {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return { s: 0, l: 0.5 };
+  const n = parseInt(m[1]!, 16);
+  const r = ((n >> 16) & 255) / 255;
+  const g = ((n >> 8) & 255) / 255;
+  const b = (n & 255) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const s = max === min ? 0 : (max - min) / (1 - Math.abs(2 * l - 1));
+  return { s, l };
+}
+
+/**
+ * The pack's signature accent — the colour its tinted card washes into white.
+ *
+ * Pack palettes do not agree on ordering (some lead with ink, some with
+ * cream), so the accent is *found*, not indexed: the most saturated colour
+ * that is neither ink nor paper wins. The designer's swatch order is
+ * considered first — a tie keeps the earlier, intentional colour.
+ */
+export function packAccent(pack: ShapePack): string {
+  const candidates = [
+    ...(pack.swatches ?? []),
+    ...(pack.themes?.light ?? []).map((stop) => stop.f),
+  ];
+  let best = '#786964';
+  let bestScore = -1;
+  for (const c of candidates) {
+    const { s, l } = satLight(c);
+    if (l < 0.12 || l > 0.92) continue; // ink and paper are not accents
+    // Rounded so a mathematical tie (two colours at full saturation) stays a
+    // tie — floating-point noise must not reorder the designer's palette.
+    const score = Math.round(s * 1000) / 1000;
+    if (score > bestScore) {
+      best = c;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
 export function packSurface(entry: PackEntry, theme = 'dark'): PackSurface {
   const stops = entry.pack.themes?.[theme] ?? entry.pack.themes?.dark ?? [];
   const all = stops.map((s) => s.f);

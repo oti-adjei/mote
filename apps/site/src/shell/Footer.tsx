@@ -11,7 +11,7 @@ export function Footer(): React.ReactElement {
             </a>
             <p>A component library for the space behind your content.</p>
             <p className="maker-credit">
-              Built by <strong>George Heavenson</strong>.
+              Built by <strong><a href="https://hearvie.dev">George Heavenson</a></strong>.
             </p>
           </div>
           <nav className="footer-links" aria-label="Footer">

@@ -8,13 +8,16 @@ import { ROUTES } from '../lib/nav.js';
  */
 export function Header({ page }: { page: string }): React.ReactElement {
   const [open, setOpen] = useState(false);
-  const navRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLButtonElement>(null);
 
   // Escape closes it, and focus returns somewhere sensible.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        menuRef.current?.focus();
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -28,6 +31,7 @@ export function Header({ page }: { page: string }): React.ReactElement {
         </a>
 
         <button
+          ref={menuRef}
           className="menu-toggle"
           type="button"
           aria-expanded={open}
@@ -38,25 +42,30 @@ export function Header({ page }: { page: string }): React.ReactElement {
         </button>
 
         <nav
-          ref={navRef}
           className={`nav-links${open ? ' open' : ''}`}
           id="site-nav"
           aria-label="Main navigation"
         >
-          {ROUTES.map((r) => (
+          {ROUTES.map((r, i) => (
             <a
               key={r.href}
               href={r.href}
               {...(page === r.page ? { 'aria-current': 'page' as const } : {})}
             >
+              <span className="nav-num" aria-hidden="true">{i + 1}</span>
               {r.label}
             </a>
           ))}
-          <a className="btn dark" href="/docs.html">
+          {/* Mobile-only: the header CTA lives outside the nav on desktop,
+              so the open menu carries its own copy. */}
+          <a className="btn mobile-cta" href="/docs.html">
             Get started
-            <span className="arrow" aria-hidden="true">↗</span>
           </a>
         </nav>
+
+        <a className="btn header-cta" href="/docs.html">
+          Get started
+        </a>
       </div>
     </header>
   );

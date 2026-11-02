@@ -2,9 +2,22 @@
 
 import { BASE_PACK, type MotionId, type SetId, type ShapePack } from '@usemote/core';
 import { ALL_PACKS } from './packs.js';
+import { SITE_LIGHT } from './theme.js';
 
 export const PACKS = ALL_PACKS;
 export type PackId = string;
+
+/**
+ * The playground's own palette: the site's blush/plum/pink stops, offered
+ * alongside every pack's real themes. Not an engine theme name — resolved
+ * to inline stops in `toFieldProps` and omitted from generated code.
+ */
+export const SIGNATURE = 'signature';
+
+/** How the picker labels a pack. The base pack reads as the product default. */
+export function packLabel(id: PackId, pack: ShapePack): string {
+  return id === 'base' ? 'Mote default' : pack.name;
+}
 
 /**
  * Pack lookup that always yields a pack.
@@ -26,9 +39,10 @@ export const DIRECTIONS = ['right', 'left', 'up', 'down'] as const;
 /**
  * Stage background and ink come from the pack itself when it declares them,
  * so each pack's demo sits on the ground its designer chose rather than a
- * single hardcoded palette.
+ * single hardcoded palette. The signature palette sits on the site's blush.
  */
 export function stageColors(packId: PackId, theme: string): { bg: string; ink: string } {
+  if (theme === SIGNATURE) return { bg: '#faf0f2', ink: '#3f172a' };
   const pack = packFor(packId);
   return {
     bg: pack.background?.[theme] ?? (theme === 'light' ? '#efeee8' : '#121212'),
@@ -53,17 +67,17 @@ export interface Config {
 }
 
 export const DEFAULT_CONFIG: Config = {
-  packId: 'esports',
-  mode: 'bob',
-  set: 'mixed',
+  packId: 'base',
+  mode: 'drift',
+  set: 'geo',
   shapes: [],
   count: 14,
-  size: 86,
+  size: 58,
   seed: 11,
-  theme: 'dark',
+  theme: SIGNATURE,
   depth: true,
   avoid: 'center',
-  speed: 1,
+  speed: 0.65,
   interactive: true,
   direction: 'right',
 };
@@ -130,7 +144,7 @@ export function decode(hash: string): Config {
     count: Math.round(num(p.get('count'), d.count, 1, 200)),
     size: Math.round(num(p.get('size'), d.size, 8, 300)),
     seed: Math.round(num(p.get('seed'), d.seed, 0, 1e9)),
-    theme: oneOf(p.get('theme'), THEMES, d.theme as (typeof THEMES)[number]),
+    theme: oneOf(p.get('theme'), [...THEMES, SIGNATURE] as const, d.theme as string),
     depth: p.get('depth') !== '0',
     avoid: oneOf(p.get('avoid'), AVOIDS, d.avoid),
     speed: num(p.get('speed'), d.speed, 0, 3),
@@ -141,13 +155,14 @@ export function decode(hash: string): Config {
 
 /** The props actually handed to <FloatingField />. */
 export function toFieldProps(c: Config) {
+  const theme = c.theme === SIGNATURE ? SITE_LIGHT : c.theme;
   const base = {
     packs: [packFor(c.packId)],
     mode: c.mode,
     count: c.count,
     size: c.size,
     seed: c.seed,
-    theme: c.theme,
+    theme,
     depth: c.depth,
     avoid: c.avoid,
     speed: c.speed,

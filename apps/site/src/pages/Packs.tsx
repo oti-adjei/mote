@@ -1,10 +1,55 @@
 import { FloatingField } from '@usemote/react';
 import { BASE_PACK } from '@usemote/core';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { Layout } from '../shell/Layout.js';
-import { PACKS, TOTAL_SHAPES, byId, packSurface } from '../lib/packs.js';
+import { PACKS, TOTAL_SHAPES, byId, packAccent } from '../lib/packs.js';
 import { SITE_LIGHT } from '../lib/theme.js';
 import { PackDetail } from './PackDetail.js';
+
+/**
+ * One pack, on its own tinted card.
+ *
+ * The card surface is a light wash of the pack's signature accent (the first
+ * stop of its light theme) so nine cards read as nine worlds without leaving
+ * the site's light style — and the pack's own shapes float in the card
+ * itself, still until hover, replacing the old boxed preview.
+ */
+export function PackTile({ entry, footer }: { entry: (typeof PACKS)[number]; footer?: ReactNode }) {
+  const [live, setLive] = useState(false);
+  const accent = packAccent(entry.pack);
+
+  return (
+    <a
+      className="pack-tile pack-tile-live"
+      href={`/packs.html?pack=${entry.id}`}
+      style={{ '--tint': accent } as CSSProperties}
+      onMouseEnter={() => setLive(true)}
+      onMouseLeave={() => setLive(false)}
+      onFocus={() => setLive(true)}
+      onBlur={() => setLive(false)}
+    >
+      <FloatingField
+        className="tile-field" packs={[entry.pack]}
+        mode="drift" set="objects" theme="light"
+        count={6} size={46} seed={Number(entry.n)}
+        paused={!live}
+      />
+      <span className="pack-number">{entry.n} / THEMED PACK</span>
+      <div className="pack-symbol" aria-hidden="true">{entry.symbol}</div>
+      <h3>{entry.name}</h3>
+      <p>{entry.tagline}</p>
+      <p className="small muted" style={{ marginTop: 12 }}>{entry.audience}</p>
+      <div className="bottom">
+        {footer ?? (
+          <>
+            <span>{entry.pack.shapes.length} shapes</span>
+            <span aria-hidden="true">↗</span>
+          </>
+        )}
+      </div>
+    </a>
+  );
+}
 
 function useQueryPack(): string | null {
   return useMemo(
@@ -97,35 +142,7 @@ export function Packs(): React.ReactElement {
           </div>
         ) : (
           <div className="grid three" style={{ marginTop: 32 }}>
-            {matches.map((p) => {
-              const surface = packSurface(p);
-              return (
-                <a key={p.id} className="pack-tile" href={`/packs.html?pack=${p.id}`}>
-                  <span className="pack-number">{p.n} / THEMED PACK</span>
-                  <div className="pack-symbol" aria-hidden="true">{p.symbol}</div>
-                  <div
-                    className="pack-preview"
-                    style={{ background: surface.bg }}
-                    aria-hidden="true"
-                  >
-                    <FloatingField
-                      className="field" packs={[p.pack]}
-                      mode="bob" set="objects" theme="dark"
-                      count={6} size={46} seed={Number(p.n)}
-                    />
-                  </div>
-                  <h3>{p.name}</h3>
-                  <p>{p.tagline}</p>
-                  <p className="small muted" style={{ marginTop: 12 }}>
-                    {p.audience}
-                  </p>
-                  <div className="bottom">
-                    <span>{p.pack.shapes.length} shapes</span>
-                    <span aria-hidden="true">↗</span>
-                  </div>
-                </a>
-              );
-            })}
+            {matches.map((p) => <PackTile key={p.id} entry={p} />)}
           </div>
         )}
       </div>
