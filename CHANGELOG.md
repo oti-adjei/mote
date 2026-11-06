@@ -28,6 +28,21 @@ major bump — in short, anything that alters an existing seed's layout.
 `0.1.0` is deprecated on npm and points here. No code changed between the two
 versions; only the manifests consumers receive.
 
+### Deprecated
+
+- **`0.1.0`, all 16 packages** — malformed manifests, see above. Install `0.1.1`.
+
+### Fixed — tooling
+
+- **The deprecate workflow could not authenticate**, carrying the same
+  `NODE_AUTH_TOKEN` bug that was fixed in the release workflow — npm reads
+  credentials from `.npmrc`, and nothing wrote one. It would have failed with
+  `ENEEDAUTH` the first time it was needed, which is the worst possible moment
+  to discover it.
+- **Its `all` target listed 5 of 16 packages** and had gone stale as packs were
+  added, so "deprecate all" would have silently left eleven versions live. The
+  list is now read from the workspace.
+
 ## [0.1.0] — 2026-11-06
 
 First publish. 16 packages, lockstep, MIT, with npm provenance from a public

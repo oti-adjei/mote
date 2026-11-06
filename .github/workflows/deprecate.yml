@@ -25,14 +25,34 @@ jobs:
       - uses: jdx/mise-action@v2
         with: { install: true, cache: true }
 
-      - env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Same trap as release.yml: npm reads credentials from .npmrc, NOT from
+      # NODE_AUTH_TOKEN. That variable only works because actions/setup-node
+      # writes an .npmrc pointing at it, and this workflow uses mise. Without
+      # this step every deprecate below fails with ENEEDAUTH.
+      - name: Authenticate to npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          set -euo pipefail
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN secret is not set"
+            exit 1
+          fi
+          npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          echo "authenticated as $(npm whoami)"
+
+      - run: |
           set -euo pipefail
           targets="${{ inputs.package }}"
           if [ "$targets" = "all" ]; then
-            targets="@usemote/core @usemote/react @usemote/pack-esports @usemote/web-component @usemote/mcp"
+            # Read the list from the workspace rather than hardcoding it. The
+            # hardcoded list had gone stale and covered 5 of 16 packages, so
+            # "all" would have silently left eleven undeprecated.
+            targets=$(for dir in packages/*/; do
+              node -p "const p=require('./$dir/package.json'); p.private ? '' : p.name" 
+            done | tr '\n' ' ')
           fi
+          echo "targets: $targets"
           for pkg in $targets; do
             echo "deprecating $pkg@${{ inputs.version }}"
             npm deprecate "$pkg@${{ inputs.version }}" "${{ inputs.message }}"
