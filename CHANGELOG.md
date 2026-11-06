@@ -64,8 +64,8 @@ repository.
   SvelteKit SSR. Compiler-free, so one build serves Svelte 4 and 5.
 - **`@usemote/web-component`** — `<floating-field>` for plain HTML, Astro,
   Webflow and Framer. The CDN build bundles core and both packs.
-- **Nine shape packs, 137 shapes.** `pack-esports` (16), plus eight industry
-  packs from Oti's designer: `pack-space`, `pack-cyber`, `pack-health`,
+- **Nine shape packs, 137 shapes**, all drawn rather than generated.
+  `pack-esports` (16), plus eight industry packs: `pack-space`, `pack-cyber`, `pack-health`,
   `pack-education`, `pack-devtools`, `pack-ai`, `pack-fintech`,
   `pack-creative` (15–16 each). Every pack ships four themes, swatches,
   per-theme background and ink, a display typeface, demo configurations, and

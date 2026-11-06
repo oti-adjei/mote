@@ -121,13 +121,13 @@ which governs how versions are bumped.
 
 ## Credits
 
-**Engine, bindings and site** — [George Heavenson](https://hearvie.dev).
+Mote is designed and built by **[George Heavenson](https://hearvie.dev)** —
+the engine, the framework bindings, the site, and all 137 shapes.
 
-**The shapes** — all 137 across nine packs were drawn by a designer, not
-generated. Nine packs × four themes each, every shape hand-tuned for its
-aspect ratio and its palette. It is the part of this project that could not be
-made faster by writing code faster, and the part that most defines how a field
-actually looks.
+The shapes are drawn, not generated: nine packs, four themes each, every shape
+tuned for its own aspect ratio and palette. That is the half of this project
+that no amount of faster coding would have produced, and it is what decides
+whether a field actually looks like anything.
 
 ## Inspiration
 
