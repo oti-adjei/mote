@@ -45,6 +45,29 @@ jobs:
           npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
           echo "authenticated as $(npm whoami)"
 
+      # 0.1.0 shipped `workspace:^0.1.0` to consumers and was uninstallable
+      # with npm and yarn. Packing is deterministic and cheap, so assert on the
+      # packed manifest rather than trusting that the publisher rewrites it.
+      - name: "Verify no workspace: protocol survives packing"
+        run: |
+          set -euo pipefail
+          fail=0
+          for dir in packages/*/; do
+            private=$(node -p "require('./$dir/package.json').private || false")
+            [ "$private" = "true" ] && continue
+            name=$(node -p "require('./$dir/package.json').name")
+            tgz=$(cd "$dir" && pnpm pack --silent 2>/dev/null | tail -1)
+            manifest=$(cd "$dir" && tar -xzOf "$tgz" package/package.json)
+            if echo "$manifest" | grep -q 'workspace:'; then
+              echo "::error::$name would publish a workspace: specifier"
+              echo "$manifest" | grep -n 'workspace:' || true
+              fail=1
+            fi
+            (cd "$dir" && rm -f "$tgz")
+          done
+          [ "$fail" = "0" ] || exit 1
+          echo "all packed manifests clean"
+
       - name: Publish changed packages
         env:
           DRY: ${{ inputs.dry-run }}
@@ -72,6 +95,13 @@ jobs:
               echo "would publish $name@$version"
             else
               echo "publishing $name@$version"
-              (cd "$dir" && npm publish $PROVENANCE --access public)
+              # pnpm publish, NOT npm publish. pnpm rewrites the
+              # `workspace:^x.y.z` protocol in dependencies into real version
+              # ranges as it packs. npm has no idea what `workspace:` means and
+              # ships it verbatim, which is what broke 0.1.0: consumers got
+              # `"@usemote/core": "workspace:^0.1.0"` and npm/yarn refused it
+              # with EUNSUPPORTEDPROTOCOL. pnpm is the only publisher that can
+              # correctly pack this repo.
+              (cd "$dir" && pnpm publish --no-git-checks $PROVENANCE --access public)
             fi
           done

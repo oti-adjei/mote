@@ -8,7 +8,10 @@ fills its parent and sits behind your content.
 (seed, shapes, motion, theme) → an animated background layer
 ```
 
-> Status: pre-release, `0.1.0`. Nothing is published to npm yet.
+> Status: **published**, `0.1.1` on npm, MIT, with provenance.
+> Do not use `0.1.0` — its manifests were malformed. See [CHANGELOG.md](./CHANGELOG.md).
+
+Built by **[George Heavenson](https://hearvie.dev)** · [mote.hearvie.dev](https://mote.hearvie.dev)
 
 ## Why
 
@@ -115,6 +118,16 @@ through its published entry points, so a stale `dist/` tests the wrong code.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) — especially the determinism contract,
 which governs how versions are bumped.
+
+## Credits
+
+**Engine, bindings and site** — [George Heavenson](https://hearvie.dev).
+
+**The shapes** — all 137 across nine packs were drawn by a designer, not
+generated. Nine packs × four themes each, every shape hand-tuned for its
+aspect ratio and its palette. It is the part of this project that could not be
+made faster by writing code faster, and the part that most defines how a field
+actually looks.
 
 ## Inspiration
 

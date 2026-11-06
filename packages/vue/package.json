@@ -1,8 +1,12 @@
 {
   "name": "@usemote/vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vue 3 component for Mote — deterministic floating-shape background fields.",
   "license": "MIT",
+  "author": {
+    "name": "George Heavenson",
+    "url": "https://hearvie.dev"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oti-adjei/mote.git",
@@ -40,7 +44,7 @@
     }
   ],
   "peerDependencies": {
-    "@usemote/core": "workspace:^0.1.0",
+    "@usemote/core": "workspace:^0.1.1",
     "vue": ">=3.4"
   },
   "devDependencies": {

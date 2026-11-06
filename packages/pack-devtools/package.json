@@ -1,8 +1,12 @@
 {
   "name": "@usemote/pack-devtools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DevTools shape pack for Mote — 15 shapes and four themes.",
   "license": "MIT",
+  "author": {
+    "name": "George Heavenson",
+    "url": "https://hearvie.dev"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oti-adjei/mote.git",
@@ -40,7 +44,7 @@
     }
   ],
   "peerDependencies": {
-    "@usemote/core": "workspace:^0.1.0"
+    "@usemote/core": "workspace:^0.1.1"
   },
   "devDependencies": {
     "@usemote/core": "workspace:*"
