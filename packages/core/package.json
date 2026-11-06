@@ -1,8 +1,12 @@
 {
   "name": "@usemote/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic floating-shape background fields. Zero dependencies, SSR-safe, reduced-motion aware.",
   "license": "MIT",
+  "author": {
+    "name": "George Heavenson",
+    "url": "https://hearvie.dev"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oti-adjei/mote.git",

@@ -255,10 +255,10 @@ importers:
         specifier: ^1.21.0
         version: 1.32.2(zod@3.25.76)
       '@usemote/core':
-        specifier: workspace:^0.1.0
+        specifier: workspace:^0.1.1
         version: link:../core
       '@usemote/pack-esports':
-        specifier: workspace:^0.1.0
+        specifier: workspace:^0.1.1
         version: link:../pack-esports
       zod:
         specifier: ^3.25.0
@@ -385,7 +385,7 @@ importers:
   packages/web-component:
     dependencies:
       '@usemote/core':
-        specifier: workspace:^0.1.0
+        specifier: workspace:^0.1.1
         version: link:../core
     devDependencies:
       '@usemote/pack-esports':

@@ -1,8 +1,12 @@
 {
   "name": "@usemote/web-component",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "<floating-field> custom element for Mote. Works in plain HTML, Astro, Webflow, Framer — anywhere a script tag runs.",
   "license": "MIT",
+  "author": {
+    "name": "George Heavenson",
+    "url": "https://hearvie.dev"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oti-adjei/mote.git",
@@ -42,7 +46,7 @@
     }
   ],
   "dependencies": {
-    "@usemote/core": "workspace:^0.1.0"
+    "@usemote/core": "workspace:^0.1.1"
   },
   "devDependencies": {
     "@usemote/pack-esports": "workspace:*",

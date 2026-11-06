@@ -1,8 +1,12 @@
 {
   "name": "@usemote/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for Mote — lets coding agents discover shapes, packs and presets, and generate correct snippets.",
   "license": "MIT",
+  "author": {
+    "name": "George Heavenson",
+    "url": "https://hearvie.dev"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oti-adjei/mote.git",
@@ -35,8 +39,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.21.0",
-    "@usemote/core": "workspace:^0.1.0",
-    "@usemote/pack-esports": "workspace:^0.1.0",
+    "@usemote/core": "workspace:^0.1.1",
+    "@usemote/pack-esports": "workspace:^0.1.1",
     "zod": "^3.25.0"
   },
   "publishConfig": {

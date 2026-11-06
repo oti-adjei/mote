@@ -9,7 +9,31 @@ major bump — in short, anything that alters an existing seed's layout.
 
 ## [Unreleased]
 
-Nothing published to npm yet. Everything below is pre-release work on `RapidQ`.
+## [0.1.1] — 2026-11-06
+
+### Fixed
+
+- **Every package except `core` published a `workspace:` specifier and could
+  not be installed with npm or yarn.** `npm install @usemote/web-component`
+  failed outright with `EUNSUPPORTEDPROTOCOL — Unsupported URL Type
+  "workspace:"`. The release workflow packed with `npm publish`, and npm does
+  not understand pnpm's `workspace:^x.y.z` protocol, so it shipped the literal
+  string instead of a version range. `pnpm publish` rewrites it; the workflow
+  now uses pnpm, and a new CI step packs every package and fails the release
+  if `workspace:` survives into a packed manifest.
+
+  pnpm users were unaffected, which is exactly why it reached the registry —
+  the monorepo's own package manager tolerates the protocol it invented.
+
+`0.1.0` is deprecated on npm and points here. No code changed between the two
+versions; only the manifests consumers receive.
+
+## [0.1.0] — 2026-11-06
+
+First publish. 16 packages, lockstep, MIT, with npm provenance from a public
+repository.
+
+**Do not install `0.1.0` — use `0.1.1`.** See above.
 
 ### Added
 
